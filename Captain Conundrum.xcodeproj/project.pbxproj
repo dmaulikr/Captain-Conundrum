@@ -1,0 +1,321 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		254CF4191F26262F008711BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254CF4181F26262F008711BC /* AppDelegate.swift */; };
+		254CF41B1F26262F008711BC /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 254CF41A1F26262F008711BC /* GameScene.sks */; };
+		254CF41D1F26262F008711BC /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 254CF41C1F26262F008711BC /* Actions.sks */; };
+		254CF41F1F26262F008711BC /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254CF41E1F26262F008711BC /* GameScene.swift */; };
+		254CF4211F26262F008711BC /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254CF4201F26262F008711BC /* GameViewController.swift */; };
+		254CF4241F26262F008711BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 254CF4221F26262F008711BC /* Main.storyboard */; };
+		254CF4261F26262F008711BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 254CF4251F26262F008711BC /* Assets.xcassets */; };
+		254CF4291F26262F008711BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 254CF4271F26262F008711BC /* LaunchScreen.storyboard */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		254CF4151F26262F008711BC /* Captain Conundrum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Captain Conundrum.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		254CF4181F26262F008711BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		254CF41A1F26262F008711BC /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
+		254CF41C1F26262F008711BC /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
+		254CF41E1F26262F008711BC /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		254CF4201F26262F008711BC /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
+		254CF4231F26262F008711BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		254CF4251F26262F008711BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		254CF4281F26262F008711BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		254CF42A1F26262F008711BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		254CF4121F26262F008711BC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		254CF40C1F26262F008711BC = {
+			isa = PBXGroup;
+			children = (
+				254CF4171F26262F008711BC /* Captain Conundrum */,
+				254CF4161F26262F008711BC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		254CF4161F26262F008711BC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				254CF4151F26262F008711BC /* Captain Conundrum.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		254CF4171F26262F008711BC /* Captain Conundrum */ = {
+			isa = PBXGroup;
+			children = (
+				254CF4181F26262F008711BC /* AppDelegate.swift */,
+				254CF41A1F26262F008711BC /* GameScene.sks */,
+				254CF41C1F26262F008711BC /* Actions.sks */,
+				254CF41E1F26262F008711BC /* GameScene.swift */,
+				254CF4201F26262F008711BC /* GameViewController.swift */,
+				254CF4221F26262F008711BC /* Main.storyboard */,
+				254CF4251F26262F008711BC /* Assets.xcassets */,
+				254CF4271F26262F008711BC /* LaunchScreen.storyboard */,
+				254CF42A1F26262F008711BC /* Info.plist */,
+			);
+			path = "Captain Conundrum";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		254CF4141F26262F008711BC /* Captain Conundrum */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 254CF42D1F26262F008711BC /* Build configuration list for PBXNativeTarget "Captain Conundrum" */;
+			buildPhases = (
+				254CF4111F26262F008711BC /* Sources */,
+				254CF4121F26262F008711BC /* Frameworks */,
+				254CF4131F26262F008711BC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Captain Conundrum";
+			productName = "Captain Conundrum";
+			productReference = 254CF4151F26262F008711BC /* Captain Conundrum.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		254CF40D1F26262F008711BC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0830;
+				LastUpgradeCheck = 0830;
+				ORGANIZATIONNAME = "Abhishek Chaudhuri";
+				TargetAttributes = {
+					254CF4141F26262F008711BC = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = UF6E5BVT98;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 254CF4101F26262F008711BC /* Build configuration list for PBXProject "Captain Conundrum" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 254CF40C1F26262F008711BC;
+			productRefGroup = 254CF4161F26262F008711BC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				254CF4141F26262F008711BC /* Captain Conundrum */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		254CF4131F26262F008711BC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				254CF4241F26262F008711BC /* Main.storyboard in Resources */,
+				254CF41B1F26262F008711BC /* GameScene.sks in Resources */,
+				254CF4261F26262F008711BC /* Assets.xcassets in Resources */,
+				254CF4291F26262F008711BC /* LaunchScreen.storyboard in Resources */,
+				254CF41D1F26262F008711BC /* Actions.sks in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		254CF4111F26262F008711BC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				254CF41F1F26262F008711BC /* GameScene.swift in Sources */,
+				254CF4211F26262F008711BC /* GameViewController.swift in Sources */,
+				254CF4191F26262F008711BC /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		254CF4221F26262F008711BC /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				254CF4231F26262F008711BC /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		254CF4271F26262F008711BC /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				254CF4281F26262F008711BC /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		254CF42B1F26262F008711BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		254CF42C1F26262F008711BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		254CF42E1F26262F008711BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = UF6E5BVT98;
+				INFOPLIST_FILE = "Captain Conundrum/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Make-School.Captain-Conundrum";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		254CF42F1F26262F008711BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = UF6E5BVT98;
+				INFOPLIST_FILE = "Captain Conundrum/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Make-School.Captain-Conundrum";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		254CF4101F26262F008711BC /* Build configuration list for PBXProject "Captain Conundrum" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				254CF42B1F26262F008711BC /* Debug */,
+				254CF42C1F26262F008711BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		254CF42D1F26262F008711BC /* Build configuration list for PBXNativeTarget "Captain Conundrum" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				254CF42E1F26262F008711BC /* Debug */,
+				254CF42F1F26262F008711BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 254CF40D1F26262F008711BC /* Project object */;
+}
