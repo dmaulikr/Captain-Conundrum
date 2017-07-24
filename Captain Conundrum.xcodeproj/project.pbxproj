@@ -17,6 +17,11 @@
 		254CF4241F26262F008711BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 254CF4221F26262F008711BC /* Main.storyboard */; };
 		254CF4261F26262F008711BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 254CF4251F26262F008711BC /* Assets.xcassets */; };
 		254CF4291F26262F008711BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 254CF4271F26262F008711BC /* LaunchScreen.storyboard */; };
+		25EFF55B1F265F550096F4FA /* MainMenu.sks in Resources */ = {isa = PBXBuildFile; fileRef = 25EFF55A1F265F550096F4FA /* MainMenu.sks */; };
+		25EFF55D1F265F670096F4FA /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFF55C1F265F670096F4FA /* MainMenu.swift */; };
+		25EFF55F1F2665260096F4FA /* MSButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFF55E1F2665260096F4FA /* MSButtonNode.swift */; };
+		25EFF5611F26685C0096F4FA /* Options.sks in Resources */ = {isa = PBXBuildFile; fileRef = 25EFF5601F26685C0096F4FA /* Options.sks */; };
+		25EFF5631F26720F0096F4FA /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFF5621F26720F0096F4FA /* Options.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +37,11 @@
 		254CF4251F26262F008711BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		254CF4281F26262F008711BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		254CF42A1F26262F008711BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		25EFF55A1F265F550096F4FA /* MainMenu.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MainMenu.sks; sourceTree = "<group>"; };
+		25EFF55C1F265F670096F4FA /* MainMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
+		25EFF55E1F2665260096F4FA /* MSButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSButtonNode.swift; sourceTree = "<group>"; };
+		25EFF5601F26685C0096F4FA /* Options.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Options.sks; sourceTree = "<group>"; };
+		25EFF5621F26720F0096F4FA /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,10 +86,15 @@
 			isa = PBXGroup;
 			children = (
 				254CF4181F26262F008711BC /* AppDelegate.swift */,
+				25EFF55A1F265F550096F4FA /* MainMenu.sks */,
+				25EFF5601F26685C0096F4FA /* Options.sks */,
 				254CF41A1F26262F008711BC /* GameScene.sks */,
 				254CF41C1F26262F008711BC /* Actions.sks */,
+				25EFF55C1F265F670096F4FA /* MainMenu.swift */,
+				25EFF5621F26720F0096F4FA /* Options.swift */,
 				254CF41E1F26262F008711BC /* GameScene.swift */,
 				254CF4201F26262F008711BC /* GameViewController.swift */,
+				25EFF55E1F2665260096F4FA /* MSButtonNode.swift */,
 				254CF4221F26262F008711BC /* Main.storyboard */,
 				254CF4251F26262F008711BC /* Assets.xcassets */,
 				254CF4271F26262F008711BC /* LaunchScreen.storyboard */,
@@ -150,9 +165,11 @@
 			files = (
 				254CF4241F26262F008711BC /* Main.storyboard in Resources */,
 				25192DEA1F262E6B00722D8F /* ui-sfx-set in Resources */,
+				25EFF5611F26685C0096F4FA /* Options.sks in Resources */,
 				254CF41B1F26262F008711BC /* GameScene.sks in Resources */,
 				25192DE81F262E4800722D8F /* digital-sfx-set in Resources */,
 				254CF4261F26262F008711BC /* Assets.xcassets in Resources */,
+				25EFF55B1F265F550096F4FA /* MainMenu.sks in Resources */,
 				254CF4291F26262F008711BC /* LaunchScreen.storyboard in Resources */,
 				254CF41D1F26262F008711BC /* Actions.sks in Resources */,
 			);
@@ -168,6 +185,9 @@
 				254CF41F1F26262F008711BC /* GameScene.swift in Sources */,
 				254CF4211F26262F008711BC /* GameViewController.swift in Sources */,
 				254CF4191F26262F008711BC /* AppDelegate.swift in Sources */,
+				25EFF55D1F265F670096F4FA /* MainMenu.swift in Sources */,
+				25EFF5631F26720F0096F4FA /* Options.swift in Sources */,
+				25EFF55F1F2665260096F4FA /* MSButtonNode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
