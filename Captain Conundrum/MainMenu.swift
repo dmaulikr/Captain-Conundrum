@@ -9,14 +9,38 @@
 import SpriteKit
 
 class MainMenu: SKScene {
-    var star: SKSpriteNode!
+    var player: MSButtonNode!
+    var blast: SKSpriteNode!
     var buttonStart: MSButtonNode!
     var buttonOptions: MSButtonNode!
+    var scrollLayer: SKNode!
+    let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
+    let scrollSpeed: CGFloat = 100
+    
+    /*var attack: SKSpriteNode = {
+        let blast = SKSpriteNode()
+        blast.size.width = 15
+        blast.size.height = 40
+        blast.color = .orange
+        blast.position = CGPoint(x: 0, y: 0)
+        blast.zPosition = 1
+        return blast
+    } ()*/
     
     override func didMove(to view: SKView) {
-        star = childNode(withName: "star") as! SKSpriteNode
+        player = childNode(withName: "player") as! MSButtonNode
+        blast = childNode(withName: "blast") as! SKSpriteNode
         buttonStart = childNode(withName: "buttonStart") as! MSButtonNode
         buttonOptions = childNode(withName: "buttonOptions") as! MSButtonNode
+        scrollLayer = childNode(withName: "scrollLayer")
+        
+        player.selectedHandler = {
+            self.blast.physicsBody?.velocity = CGVector(dx: 0, dy: 500) // Secret button!
+            
+            if self.blast.position.y >= 325 {
+                self.blast.position.y = 0 // Replace attack when offscreen
+            }
+        }
         
         buttonStart.selectedHandler = {
             self.loadGame()
@@ -61,5 +85,19 @@ class MainMenu: SKScene {
         let fade = SKTransition.fade(withDuration: 1)
         
         skView.presentScene(scene, transition: fade)
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        scrollLayer.position.y -= scrollSpeed * CGFloat(fixedDelta) // Moves scrollLayer along with child stars
+        
+        for star in scrollLayer.children as! [SKSpriteNode] {
+            // Moves stars back to original position to give illusion of endless scrolling
+            let starPosition = scrollLayer.convert(star.position, to: self)
+            
+            if starPosition.y <= -305 { // Offscreen
+                let newPosition = CGPoint(x: starPosition.x, y: (self.size.height / 2) + star.size.height)
+                star.position = self.convert(newPosition, to: scrollLayer)
+            }
+        }
     }
 }

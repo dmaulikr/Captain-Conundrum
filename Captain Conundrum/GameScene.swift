@@ -15,22 +15,24 @@ enum GameState {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var player: SKSpriteNode!
-    var star: SKSpriteNode!
     var buttonPause: MSButtonNode!
     var boxPause: SKNode!
     var buttonContinue: MSButtonNode!
     var buttonQuit: MSButtonNode!
+    var scrollLayer: SKNode!
+    var fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
+    var scrollSpeed: CGFloat = 100
     var motionManager: CMMotionManager!
     var gameState: GameState = .active
     
     override func didMove(to view: SKView) {
         // Called immediately after scene is loaded into view
         player = childNode(withName: "player") as! SKSpriteNode
-        star = childNode(withName: "star") as! SKSpriteNode
         buttonPause = childNode(withName: "buttonPause") as! MSButtonNode
         boxPause = childNode(withName: "boxPause")
         buttonContinue = boxPause.childNode(withName: "buttonContinue") as! MSButtonNode
         buttonQuit = boxPause.childNode(withName: "buttonQuit") as! MSButtonNode
+        scrollLayer = childNode(withName: "scrollLayer")
         
         if gameState == .active {
             self.boxPause.isHidden = true
@@ -98,6 +100,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }*/
     
+    func scrollWorld() {
+        scrollLayer.position.y -= scrollSpeed * CGFloat(fixedDelta) // Moves scrollLayer along with child stars
+        
+        for star in scrollLayer.children as! [SKSpriteNode] {
+            // Moves stars back to original position to give illusion of endless scrolling
+            let starPosition = scrollLayer.convert(star.position, to: self)
+            
+            if starPosition.y <= -305 { // Offscreen
+                let newPosition = CGPoint(x: starPosition.x, y: (self.size.height / 2) + star.size.height)
+                star.position = self.convert(newPosition, to: scrollLayer)
+            }
+        }
+    }
+    
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         if gameState != .active { return }
@@ -106,6 +122,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return // Accelerometer isn't ready until the next frame
         }
         player.position.x += CGFloat(Double((motion.acceleration.x)) * 15)
+        
+        scrollWorld()
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
