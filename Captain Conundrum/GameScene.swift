@@ -14,20 +14,54 @@ enum GameState {
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    // Main variables and buttons
     var player: SKSpriteNode!
+    var meteor: SKSpriteNode!
     var buttonPause: MSButtonNode!
     var boxPause: SKNode!
     var buttonContinue: MSButtonNode!
     var buttonQuit: MSButtonNode!
+    
+    // Scrolling
     var scrollLayer: SKNode!
     var fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     var scrollSpeed: CGFloat = 100
+    
+    // Other
     var motionManager: CMMotionManager!
+    var meteorsHit = 0 // Keeps track of initial meteor herd
+    var messageTime: CFTimeInterval = 0 // In seconds
     var gameState: GameState = .active
+    
+    var attack: SKSpriteNode = {
+        let blast = SKSpriteNode()
+        blast.name = "attack"
+        blast.size.width = 15
+        blast.size.height = 40
+        blast.color = .orange
+        blast.zPosition = 1
+        blast.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: blast.size.width, height: blast.size.height))
+        blast.physicsBody?.pinned = false
+        blast.physicsBody?.affectedByGravity = false
+        blast.physicsBody?.categoryBitMask = 4
+        blast.physicsBody?.collisionBitMask = 4
+        blast.physicsBody?.contactTestBitMask = 8
+        return blast
+    } ()
+    
+    var startMessage: SKLabelNode = {
+        let label = SKLabelNode(fontNamed: "Britannic Bold")
+        label.fontSize = 96
+        label.position = CGPoint(x: 0, y: 0)
+        label.zPosition = 1
+        label.text = "Start"
+        return label
+    } ()
     
     override func didMove(to view: SKView) {
         // Called immediately after scene is loaded into view
         player = childNode(withName: "player") as! SKSpriteNode
+        meteor = childNode(withName: "meteor") as! SKSpriteNode
         buttonPause = childNode(withName: "buttonPause") as! MSButtonNode
         boxPause = childNode(withName: "boxPause")
         buttonContinue = boxPause.childNode(withName: "buttonContinue") as! MSButtonNode
@@ -41,11 +75,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         buttonPause.selectedHandler = {
             self.gameState = .paused
             self.boxPause.isHidden = false
+            // If the player pauses while firing, the shot stops
+            if let blast = self.attack.physicsBody {
+                blast.velocity.dy = 0
+            }
         }
         
         buttonContinue.selectedHandler = {
             self.gameState = .active
             self.boxPause.isHidden = true
+            if let blast = self.attack.physicsBody {
+                blast.velocity.dy = 500
+            }
         }
         
         buttonQuit.selectedHandler = {
@@ -90,6 +131,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Called once a touch is detected
+        if gameState != .active { return }
+        
+        // Copies allow for multiple attacks on screen
+        let multiAttack = attack.copy() as! SKSpriteNode
+        addChild(multiAttack)
+        multiAttack.position = player.position
+        multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: 500)
     }
     
     /*override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -124,9 +172,39 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.position.x += CGFloat(Double((motion.acceleration.x)) * 15)
         
         scrollWorld()
+        
+        if attack.position.y >= 325 {
+            attack.removeFromParent() // Remove attack when offscreen
+        }
+        
+        // After 1 second, Start disappears
+        if messageTime >= 1.0 {
+            startMessage.removeFromParent()
+        }
+        
+        if meteorsHit == 3 {
+            messageTime += fixedDelta
+        } else if meteorsHit > 3 {
+            messageTime = 0 // Reset time for any future messages
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
         // Called when two bodies make contact
+        if gameState != .active { return }
+        
+        let contactA = contact.bodyA
+        let contactB = contact.bodyB
+        let nodeA = contactA.node!
+        let nodeB = contactB.node!
+        
+        if nodeA.name == "attack" && nodeB.name == "meteor" || nodeA.name == "meteor" && nodeB.name == "attack" {
+            nodeA.removeFromParent()
+            nodeB.removeFromParent()
+            meteorsHit += 1
+            if meteorsHit == 3 {
+                addChild(startMessage) // Player has completed tutorial section
+            }
+        }
     }
 }

@@ -17,16 +17,6 @@ class MainMenu: SKScene {
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     let scrollSpeed: CGFloat = 100
     
-    /*var attack: SKSpriteNode = {
-        let blast = SKSpriteNode()
-        blast.size.width = 15
-        blast.size.height = 40
-        blast.color = .orange
-        blast.position = CGPoint(x: 0, y: 0)
-        blast.zPosition = 1
-        return blast
-    } ()*/
-    
     override func didMove(to view: SKView) {
         player = childNode(withName: "player") as! MSButtonNode
         blast = childNode(withName: "blast") as! SKSpriteNode
