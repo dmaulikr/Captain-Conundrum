@@ -40,8 +40,9 @@ class MainMenu: SKScene {
         
         scene.scaleMode = .aspectFit
         skView.showsFPS = true
+        let fade = SKTransition.fade(withDuration: 1)
         
-        skView.presentScene(scene)
+        skView.presentScene(scene, transition: fade)
     }
     
     func loadOptions() {
@@ -57,7 +58,8 @@ class MainMenu: SKScene {
         
         scene.scaleMode = .aspectFit
         skView.showsFPS = true
+        let fade = SKTransition.fade(withDuration: 1)
         
-        skView.presentScene(scene)
+        skView.presentScene(scene, transition: fade)
     }
 }

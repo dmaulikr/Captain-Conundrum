@@ -7,49 +7,73 @@
 //
 
 import SpriteKit
-import GameplayKit
+import CoreMotion
 
-class GameScene: SKScene {
-    
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
+enum GameState {
+    case active, paused, gameOver
+}
+
+class GameScene: SKScene, SKPhysicsContactDelegate {
+    var player: SKSpriteNode!
+    var star: SKSpriteNode!
+    var buttonPause: MSButtonNode!
+    var boxPause: SKNode!
+    var buttonContinue: MSButtonNode!
+    var buttonQuit: MSButtonNode!
+    var motionManager: CMMotionManager!
+    var gameState: GameState = .active
     
     override func didMove(to view: SKView) {
+        // Called immediately after scene is loaded into view
+        player = childNode(withName: "player") as! SKSpriteNode
+        star = childNode(withName: "star") as! SKSpriteNode
+        buttonPause = childNode(withName: "buttonPause") as! MSButtonNode
+        boxPause = childNode(withName: "boxPause")
+        buttonContinue = boxPause.childNode(withName: "buttonContinue") as! MSButtonNode
+        buttonQuit = boxPause.childNode(withName: "buttonQuit") as! MSButtonNode
         
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
+        if gameState == .active {
+            self.boxPause.isHidden = true
         }
         
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
+        buttonPause.selectedHandler = {
+            self.gameState = .paused
+            self.boxPause.isHidden = false
+        }
         
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
+        buttonContinue.selectedHandler = {
+            self.gameState = .active
+            self.boxPause.isHidden = true
+        }
+        
+        buttonQuit.selectedHandler = {
+            guard let skView = self.view as SKView! else {
+                print("Cound not get SKview")
+                return
+            }
             
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
+            guard let scene = GameScene(fileNamed: "MainMenu") else {
+                print("Could not load MainMenu, check the name is spelled correctly")
+                return
+            }
+            
+            scene.scaleMode = .aspectFit
+            skView.showsFPS = true
+            let fade = SKTransition.fade(withDuration: 1)
+            
+            skView.presentScene(scene, transition: fade)
         }
+        
+        physicsWorld.contactDelegate = self
+        motionManager = CMMotionManager()
+        motionManager.startAccelerometerUpdates()
     }
     
     
-    func touchDown(atPoint pos : CGPoint) {
+    /*func touchDown(atPoint pos : CGPoint) {
         if let n = self.spinnyNode?.copy() as! SKShapeNode? {
             n.position = pos
             n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
             self.addChild(n)
         }
     }
@@ -60,30 +84,31 @@ class GameScene: SKScene {
             n.strokeColor = SKColor.red
             self.addChild(n)
         }
-    }
+    }*/
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
-        
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
+        // Called once a touch is detected
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    /*override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
+    }*/
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+        if gameState != .active { return }
+        
+        guard let motion = motionManager.accelerometerData else {
+            return // Accelerometer isn't ready until the next frame
+        }
+        player.position.x += CGFloat(Double((motion.acceleration.x)) * 15)
+    }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        // Called when two bodies make contact
     }
 }
