@@ -31,6 +31,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var motionManager: CMMotionManager!
     var meteorsHit = 0 // Keeps track of initial meteor herd
     var messageTime: CFTimeInterval = 0 // In seconds
+    var isTouching = false
+    var touchTime: CFTimeInterval = 0
     var gameState: GameState = .active
     
     var attack: SKSpriteNode = {
@@ -112,7 +114,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         motionManager.startAccelerometerUpdates()
     }
     
-    
     /*func touchDown(atPoint pos : CGPoint) {
         if let n = self.spinnyNode?.copy() as! SKShapeNode? {
             n.position = pos
@@ -129,10 +130,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }*/
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // Called once a touch is detected
-        if gameState != .active { return }
-        
+    func shoot() {
         // Copies allow for multiple attacks on screen
         let multiAttack = attack.copy() as! SKSpriteNode
         addChild(multiAttack)
@@ -140,11 +138,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: 500)
     }
     
-    /*override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Called once a touch is detected
+        if gameState != .active { return }
+        
+        isTouching = true
+        shoot()
     }
     
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Called when finger is lifted off the phone
+        if gameState != .active { return }
+        
+        isTouching = false
+    }
+    
+    /*override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }*/
     
@@ -186,6 +195,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             messageTime += fixedDelta
         } else if meteorsHit > 3 {
             messageTime = 0 // Reset time for any future messages
+        }
+        
+        if isTouching {
+            touchTime += fixedDelta
+            
+            if touchTime >= 0.5 { // Auto-fire every 0.5 seconds
+                shoot()
+                touchTime = 0
+            }
         }
     }
     
