@@ -43,7 +43,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         blast.color = .orange
         blast.zPosition = 1
         blast.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: blast.size.width, height: blast.size.height))
-        blast.physicsBody?.pinned = false
+        blast.physicsBody?.allowsRotation = false
         blast.physicsBody?.affectedByGravity = false
         blast.physicsBody?.categoryBitMask = 4
         blast.physicsBody?.collisionBitMask = 4
@@ -136,6 +136,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(multiAttack)
         multiAttack.position = player.position
         multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: 500)
+        attack = multiAttack // Will allow any code that involves attack outside function to work
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -186,14 +187,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             attack.removeFromParent() // Remove attack when offscreen
         }
         
+        if meteorsHit >= 3 && messageTime > 0 { // Can hit more meteors without affecting start timer
+            messageTime += fixedDelta
+        }
+        
         // After 1 second, Start disappears
         if messageTime >= 1.0 {
             startMessage.removeFromParent()
-        }
-        
-        if meteorsHit == 3 {
-            messageTime += fixedDelta
-        } else if meteorsHit > 3 {
             messageTime = 0 // Reset time for any future messages
         }
         
@@ -222,6 +222,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             meteorsHit += 1
             if meteorsHit == 3 {
                 addChild(startMessage) // Player has completed tutorial section
+                messageTime += fixedDelta
             }
         }
     }

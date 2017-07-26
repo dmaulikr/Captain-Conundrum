@@ -13,19 +13,23 @@ class Options: SKScene {
     var achievements: MSButtonNode!
     var buttonBack: MSButtonNode!
     var musicToggle: MSButtonNode!
+    var messageTime: CFTimeInterval = 0
+    var fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
+    var comingSoon: SKLabelNode! // Placeholder until features are implemented
     
     override func didMove(to view: SKView) {
         leaderboards = childNode(withName: "leaderboards") as! MSButtonNode
         achievements = childNode(withName: "achievements") as! MSButtonNode
         buttonBack = childNode(withName: "buttonBack") as! MSButtonNode
         musicToggle = childNode(withName: "musicToggle") as! MSButtonNode
+        comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
         
         leaderboards.selectedHandler = {
-            
+            self.comingSoon.isHidden = false
         }
         
         achievements.selectedHandler = {
-            
+            self.comingSoon.isHidden = false
         }
         
         buttonBack.selectedHandler = {
@@ -33,7 +37,7 @@ class Options: SKScene {
         }
         
         musicToggle.selectedHandler = {
-            
+            self.comingSoon.isHidden = false
         }
     }
     
@@ -53,5 +57,17 @@ class Options: SKScene {
         let fade = SKTransition.fade(withDuration: 1)
         
         skView.presentScene(scene, transition: fade)
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        if comingSoon.isHidden == false {
+            messageTime += fixedDelta
+        }
+        
+        // After 1 second, the coming soon message disappears
+        if messageTime >= 1.0 {
+            comingSoon.isHidden = true // Returns to default state
+            messageTime = 0 // Reset timer for each cycle
+        }
     }
 }
