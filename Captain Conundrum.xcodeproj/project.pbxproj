@@ -22,6 +22,7 @@
 		25EFF55F1F2665260096F4FA /* MSButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFF55E1F2665260096F4FA /* MSButtonNode.swift */; };
 		25EFF5611F26685C0096F4FA /* Options.sks in Resources */ = {isa = PBXBuildFile; fileRef = 25EFF5601F26685C0096F4FA /* Options.sks */; };
 		25EFF5631F26720F0096F4FA /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFF5621F26720F0096F4FA /* Options.swift */; };
+		25FF19901F29239C006F80BA /* CGFloat+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FF198F1F29239C006F80BA /* CGFloat+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		25EFF55E1F2665260096F4FA /* MSButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSButtonNode.swift; sourceTree = "<group>"; };
 		25EFF5601F26685C0096F4FA /* Options.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Options.sks; sourceTree = "<group>"; };
 		25EFF5621F26720F0096F4FA /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
+		25FF198F1F29239C006F80BA /* CGFloat+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGFloat+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +97,7 @@
 				254CF41E1F26262F008711BC /* GameScene.swift */,
 				254CF4201F26262F008711BC /* GameViewController.swift */,
 				25EFF55E1F2665260096F4FA /* MSButtonNode.swift */,
+				25FF198F1F29239C006F80BA /* CGFloat+Extensions.swift */,
 				254CF4221F26262F008711BC /* Main.storyboard */,
 				254CF4251F26262F008711BC /* Assets.xcassets */,
 				254CF4271F26262F008711BC /* LaunchScreen.storyboard */,
@@ -184,6 +187,7 @@
 			files = (
 				254CF41F1F26262F008711BC /* GameScene.swift in Sources */,
 				254CF4211F26262F008711BC /* GameViewController.swift in Sources */,
+				25FF19901F29239C006F80BA /* CGFloat+Extensions.swift in Sources */,
 				254CF4191F26262F008711BC /* AppDelegate.swift in Sources */,
 				25EFF55D1F265F670096F4FA /* MainMenu.swift in Sources */,
 				25EFF5631F26720F0096F4FA /* Options.swift in Sources */,
