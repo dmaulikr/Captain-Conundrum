@@ -9,6 +9,9 @@
 import SpriteKit
 
 class Options: SKScene {
+    var buttonControls: MSButtonNode!
+    var buttonCredits: MSButtonNode!
+    var buttonCustomize: MSButtonNode!
     var leaderboards: MSButtonNode!
     var achievements: MSButtonNode!
     var buttonBack: MSButtonNode!
@@ -18,11 +21,26 @@ class Options: SKScene {
     var comingSoon: SKLabelNode! // Placeholder until features are implemented
     
     override func didMove(to view: SKView) {
+        buttonControls = childNode(withName: "buttonControls") as! MSButtonNode
+        buttonCredits = childNode(withName: "buttonCredits") as! MSButtonNode
+        buttonCustomize = childNode(withName: "buttonCustomize") as! MSButtonNode
         leaderboards = childNode(withName: "leaderboards") as! MSButtonNode
         achievements = childNode(withName: "achievements") as! MSButtonNode
         buttonBack = childNode(withName: "buttonBack") as! MSButtonNode
         musicToggle = childNode(withName: "musicToggle") as! MSButtonNode
         comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
+        
+        buttonControls.selectedHandler = {
+            self.comingSoon.isHidden = false
+        }
+        
+        buttonCredits.selectedHandler = {
+            self.comingSoon.isHidden = false
+        }
+        
+        buttonCustomize.selectedHandler = {
+            self.comingSoon.isHidden = false
+        }
         
         leaderboards.selectedHandler = {
             self.comingSoon.isHidden = false
