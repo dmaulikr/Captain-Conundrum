@@ -26,7 +26,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var buttonPause: MSButtonNode!
     var boxPause: SKNode!
     var buttonContinue: MSButtonNode!
-    var buttonQuit: MSButtonNode!
+    var buttonQuit: MSButtonNode! // Pause
+    var boxGameOver: SKNode!
+    var buttonRetry: MSButtonNode!
+    var buttonQuit2: MSButtonNode! // Game Over
     
     // Scrolling
     var scrollLayer: SKNode!
@@ -35,6 +38,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Other
     var scoreLabel: SKLabelNode!
+    var healthBar: SKSpriteNode!
     var motionManager: CMMotionManager!
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
     var messageTime: CFTimeInterval = 0 // In seconds
@@ -84,15 +88,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         boxPause = childNode(withName: "boxPause")
         buttonContinue = boxPause.childNode(withName: "buttonContinue") as! MSButtonNode
         buttonQuit = boxPause.childNode(withName: "buttonQuit") as! MSButtonNode
+        boxGameOver = childNode(withName: "boxGameOver")
+        buttonRetry = boxGameOver.childNode(withName: "buttonRetry") as! MSButtonNode
+        buttonQuit2 = boxGameOver.childNode(withName: "buttonQuit2") as! MSButtonNode
         
         scrollLayer = childNode(withName: "scrollLayer")
         scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
-        
-        if gameState == .active {
-            self.boxPause.isHidden = true
-        }
+        healthBar = childNode(withName: "healthBar") as! SKSpriteNode
         
         buttonPause.selectedHandler = {
+            if self.gameState == .gameOver { return }
             self.gameState = .paused
             self.boxPause.isHidden = false
             // If the player pauses while firing, the shot stops
@@ -126,6 +131,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             skView.presentScene(scene, transition: fade)
         }
+        
+        buttonRetry.selectedHandler = {
+            self.boxGameOver.position.x = -286
+            
+            guard let skView = self.view as SKView! else {
+                print("Could not get SKview")
+                return
+            }
+            
+            guard let scene = GameScene(fileNamed: "GameScene") else {
+                print("Could not load GameScene, check the name is spelled correctly")
+                return
+            }
+            
+            scene.scaleMode = .aspectFit
+            skView.showsFPS = true
+            let fade = SKTransition.fade(withDuration: 1)
+            
+            skView.presentScene(scene, transition: fade)
+        }
+        
+        buttonQuit2.selectedHandler = buttonQuit.selectedHandler
         
         physicsWorld.contactDelegate = self
         motionManager = CMMotionManager()
@@ -213,7 +240,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        if gameState != .active { return }
+        if gameState == .paused { return }
+        
+        // Only have pause box if paused
+        self.boxPause.isHidden = true
+        
+        // Only have game over box if game over
+        if gameState == .gameOver {
+            self.boxGameOver.position.x = 0
+            return
+        }
         
         guard let motion = motionManager.accelerometerData else {
             return // Accelerometer isn't ready until the next frame
@@ -315,6 +351,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if nodeA.name == "player" && nodeB.name != "boundary" || nodeA.name != "boundary" && nodeB.name == "player" {
             if nodeA.name != "player" && nodeA.name != "boundary" { nodeA.removeFromParent() }
             else if nodeB.name != "player" && nodeB.name != "boundary" { nodeB.removeFromParent() }
+            
+            healthBar.yScale -= 0.25
+            // When the player is low on health, the health bar turns red
+            if healthBar.yScale <= 1.25 {
+                healthBar.texture = SKTexture(imageNamed: "laserRed02")
+            }
+            if healthBar.yScale <= 0 {
+                if nodeA.name == "player" { nodeA.removeFromParent() }
+                else { nodeB.removeFromParent() }
+                gameState = .gameOver
+            }
         }
     }
 }
