@@ -58,7 +58,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         blast.physicsBody?.affectedByGravity = false
         blast.physicsBody?.categoryBitMask = 4
         blast.physicsBody?.collisionBitMask = 4
-        blast.physicsBody?.contactTestBitMask = 120 // In contact with all enemies
+        blast.physicsBody?.contactTestBitMask = 122 // In contact with all enemies and boundaries
         return blast
     } ()
     
@@ -223,10 +223,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scrollWorld()
         spawnEnemy()
         
-        if attack.position.y >= 305 {
-            attack.removeFromParent() // Remove attack when offscreen
-        }
-        
         if messageTime > 0 { // Can hit more meteors without affecting start timer
             messageTime += fixedDelta
         }
@@ -301,6 +297,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             nodeA.removeFromParent()
             nodeB.removeFromParent()
             score += 20
+        }
+        
+        // Blasts are going offscreen
+        if nodeA.name == "attack" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "attack" {
+            if nodeA.name == "attack" { nodeA.removeFromParent() }
+            else { nodeB.removeFromParent() }
+        }
+        
+        // Enemies are going offscreen
+        if nodeA.name == "meteor" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "meteor" || nodeA.name == "satellite" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "satellite" || nodeA.name == "rocket" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "rocket" || nodeA.name == "ufo" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "ufo" {
+            if nodeA.name == "boundary" { nodeB.removeFromParent() }
+            else { nodeA.removeFromParent() }
         }
         
         // Player is taking damage (except with the boundaries)
