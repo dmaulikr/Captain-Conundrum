@@ -33,9 +33,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Scrolling
     var scrollLayer: SKNode!
-    var fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
-    var scrollSpeed: CGFloat = 100
+    let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
+    let scrollSpeed: CGFloat = 100
     var enemySpeed: [Double] = [-100, -200, -300, -150] // Each enemy in order
+    
+    // Timers (in seconds)
+    var messageTime: CFTimeInterval = 0 // Start message
+    var spawnTimer:  CFTimeInterval = 0 // Enemy spawning
+    var touchTime:   CFTimeInterval = 0 // Holding down touch
     
     // Other
     var scoreLabel: SKLabelNode!
@@ -43,11 +48,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var motionManager: CMMotionManager!
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
     var numberOfBlasts = 0
-    var messageTime: CFTimeInterval = 0 // In seconds
-    var spawnTimer: CFTimeInterval = 0
     var isTouching = false
-    var touchTime: CFTimeInterval = 0
-    var gameTimer: CFTimeInterval = 0
+    var gameStart = false
     var gameState: GameState = .active
     
     var score = 0 {
@@ -261,7 +263,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 addChild(newUFO)
         }
         
-        spawnTimer = fixedDelta
+        spawnTimer = 0
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -277,6 +279,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
         
+        // The rest of update is only when game is active
         guard let motion = motionManager.accelerometerData else {
             return // Accelerometer isn't ready until the next frame
         }
@@ -287,22 +290,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if messageTime > 0 { // Can hit more meteors without affecting start timer
             messageTime += fixedDelta
-        }
-        
-        // After 1 second, Start disappears
-        if messageTime >= 1 {
-            startMessage.removeFromParent()
-            messageTime = 0 // Reset time for any future messages
-        }
-        
-        // Waiting time before a new enemy shows up
-        if spawnTimer > 0 {
-            spawnTimer += fixedDelta
-        }
-        
-        if gameTimer > 0 {
-            gameTimer += fixedDelta
             
+            // After 1 second, Start disappears
+            if messageTime >= 1 {
+                startMessage.removeFromParent()
+                messageTime = 0 // Reset time for any future messages
+            }
+        }
+        
+        if gameStart {
+            spawnTimer += fixedDelta
             for enemy in 0...3 {
                 enemySpeed[enemy] -= 0.01 // Overtime, enemies speed up to increase difficulty
             }
@@ -355,7 +352,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 scoreLabel.isHidden = false
                 messageTime += fixedDelta
                 spawnTimer += fixedDelta
-                gameTimer += fixedDelta
+                gameStart = true
             }
         }
         
