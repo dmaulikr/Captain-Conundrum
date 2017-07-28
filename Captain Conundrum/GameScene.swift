@@ -42,6 +42,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var healthBar: SKSpriteNode!
     var motionManager: CMMotionManager!
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
+    var numberOfBlasts = 0
     var messageTime: CFTimeInterval = 0 // In seconds
     var spawnTimer: CFTimeInterval = 0
     var isTouching = false
@@ -163,12 +164,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func shoot() {
+        if numberOfBlasts >= 3 { return } // Only 3 lasers allowed on screen at once
         // Copies allow for multiple attacks on screen
         let multiAttack = attack.copy() as! SKSpriteNode
         addChild(multiAttack)
         multiAttack.position = player.position
         multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: 500)
-        attack = multiAttack // Will allow any code that involves attack outside function to work
+        //attack = multiAttack // Will allow any code that involves attack outside function to work
+        numberOfBlasts += 1
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -313,6 +316,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if nodeA.name == "attack" && nodeB.name == "initialMeteor" || nodeA.name == "initialMeteor" && nodeB.name == "attack" {
             nodeA.removeFromParent()
             nodeB.removeFromParent()
+            numberOfBlasts -= 1
             initialMeteorsHit += 1
             if initialMeteorsHit == 3 {
                 addChild(startMessage) // Player has completed tutorial section
@@ -326,24 +330,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if nodeA.name == "attack" && nodeB.name == "meteor" || nodeA.name == "meteor" && nodeB.name == "attack" {
             nodeA.removeFromParent()
             nodeB.removeFromParent()
+            numberOfBlasts -= 1
             score += 1
         }
         
         if nodeA.name == "attack" && nodeB.name == "satellite" || nodeA.name == "satellite" && nodeB.name == "attack" {
             nodeA.removeFromParent()
             nodeB.removeFromParent()
+            numberOfBlasts -= 1
             score += 5
         }
         
         if nodeA.name == "attack" && nodeB.name == "rocket" || nodeA.name == "rocket" && nodeB.name == "attack" {
             nodeA.removeFromParent()
             nodeB.removeFromParent()
+            numberOfBlasts -= 1
             score += 10
         }
         
         if nodeA.name == "attack" && nodeB.name == "ufo" || nodeA.name == "ufo" && nodeB.name == "attack" {
             nodeA.removeFromParent()
             nodeB.removeFromParent()
+            numberOfBlasts -= 1
             score += 20
         }
         
@@ -356,6 +364,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if nodeA.name == "attack" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "attack" {
             if nodeA.name == "attack" { nodeA.removeFromParent() }
             else { nodeB.removeFromParent() }
+            numberOfBlasts -= 1
         }
         
         // Enemies are going offscreen
