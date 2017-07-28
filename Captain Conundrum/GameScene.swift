@@ -79,6 +79,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return label
     } ()
     
+    var highScoreLabel: SKLabelNode = {
+        let label = SKLabelNode(fontNamed: "Britannic Bold")
+        label.fontSize = 36
+        label.fontColor = .cyan
+        label.position = CGPoint(x: 0, y: 175)
+        label.zPosition = 2
+        label.text = "High Score: \(UserDefaults().integer(forKey: "highscore"))"
+        return label
+    } ()
+    
+    var newRecordLabel: SKLabelNode = {
+        let label = SKLabelNode(fontNamed: "Britannic Bold")
+        label.fontSize = 36
+        label.fontColor = .green
+        label.position = CGPoint(x: 0, y: 125)
+        label.zPosition = 2
+        label.text = "New Record!"
+        return label
+    } ()
+    
     override func didMove(to view: SKView) {
         // Called immediately after scene is loaded into view
         player = childNode(withName: "player") as! SKSpriteNode
@@ -298,6 +318,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func playerScoreUpdate() {
+        // Called once player loses
+        addChild(highScoreLabel)
+        let highScore = UserDefaults().integer(forKey: "highscore")
+        
+        if score > highScore {
+            UserDefaults().set(score, forKey: "highscore") // New high score set
+            highScoreLabel.text = "High Score: \(score)"
+            addChild(newRecordLabel)
+        }
+    }
+    
     func didBegin(_ contact: SKPhysicsContact) {
         // Called when two bodies make contact
         if gameState != .active { return }
@@ -387,6 +419,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 if nodeA.name == "player" { nodeA.removeFromParent() }
                 else { nodeB.removeFromParent() }
                 gameState = .gameOver
+                playerScoreUpdate()
             }
         }
     }
