@@ -126,18 +126,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if self.gameState == .gameOver { return }
             self.gameState = .paused
             self.boxPause.isHidden = false
-            // If the player pauses while firing, the shot stops
-            if let blast = self.attack.physicsBody {
-                blast.velocity.dy = 0
-            }
+            self.isPaused = true
         }
         
         buttonContinue.selectedHandler = {
             self.gameState = .active
             self.boxPause.isHidden = true
-            if let blast = self.attack.physicsBody {
-                blast.velocity.dy = 500
-            }
+            self.isPaused = false
         }
         
         buttonQuit.selectedHandler = {
@@ -154,6 +149,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             scene.scaleMode = .aspectFit
             skView.showsFPS = true
             let fade = SKTransition.fade(withDuration: 1)
+            self.isPaused = false
             
             skView.presentScene(scene, transition: fade)
         }
