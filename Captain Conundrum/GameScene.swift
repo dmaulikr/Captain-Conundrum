@@ -35,7 +35,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var scrollLayer: SKNode!
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     let scrollSpeed: CGFloat = 100
-    var enemySpeed: [Double] = [-100, -200, -300, -150] // Each enemy in order
+    var enemySpeed: [String: Double] = [
+        // Info about each enemy
+        "meteor": -100,
+        "satelliteX": -200, "satelliteY": -200,
+        "rocket": -300,
+        "ufoX": 150, "ufoY": -150
+    ]
     
     // Timers (in seconds)
     var messageTime: CFTimeInterval = 0 // Start message
@@ -240,22 +246,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             case 0:
                 let newMeteor = meteor.copy() as! SKSpriteNode
                 newMeteor.position = enemyPosition
-                newMeteor.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed[0]) // Fall down slowly
+                newMeteor.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["meteor"]!) // Fall down slowly
                 addChild(newMeteor)
             case 1:
                 let newSatellite = satellite.copy() as! SKSpriteNode
                 newSatellite.position = enemyPosition
-                newSatellite.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed[1]) // Move diagonally
+                newSatellite.physicsBody?.velocity = CGVector(dx: enemySpeed["satelliteX"]!, dy: enemySpeed["satelliteY"]!) // Move diagonally
                 addChild(newSatellite)
             case 2:
                 let newRocket = rocket.copy() as! SKSpriteNode
                 newRocket.position = enemyPosition
-                newRocket.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed[2]) // Fall quickly
+                newRocket.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["rocket"]!) // Fall quickly
                 addChild(newRocket)
             default:
                 let newUFO = ufo.copy() as! SKSpriteNode
                 newUFO.position = enemyPosition
-                newUFO.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed[3]) // Zigzag
+                newUFO.physicsBody?.velocity = CGVector(dx: enemySpeed["ufoX"]!, dy: enemySpeed["ufoY"]!) // Zigzag
                 addChild(newUFO)
         }
         
@@ -296,8 +302,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if gameStart {
             spawnTimer += fixedDelta
-            for enemy in 0...3 {
-                enemySpeed[enemy] -= 0.01 // Overtime, enemies speed up to increase difficulty
+            for (enemy, speed) in enemySpeed {
+                enemySpeed[enemy] = speed - 0.01 // Overtime, enemies speed up to increase difficulty
             }
         }
         
@@ -381,9 +387,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // Satellite or UFO hits the side
-        /*if nodeA.name == "satellite" && nodeB.name == "boundarySide" || nodeA.name == "boundarySide" && nodeB.name == "satellite" {
-            
-        }*/
+        if nodeA.name == "satellite" && nodeB.name == "boundarySide" || nodeA.name == "boundarySide" && nodeB.name == "satellite" {
+            enemySpeed["satelliteX"] = -enemySpeed["satelliteX"]!
+        }
+        
+        if nodeA.name == "ufo" && nodeB.name == "boundarySide" || nodeA.name == "boundarySide" && nodeB.name == "ufo" {
+            enemySpeed["ufoX"] = -enemySpeed["ufoX"]!
+        }
         
         // Blasts are going offscreen
         if nodeA.name == "attack" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "attack" {
@@ -396,6 +406,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if nodeA.name == "meteor" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "meteor" || nodeA.name == "satellite" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "satellite" || nodeA.name == "rocket" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "rocket" || nodeA.name == "ufo" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "ufo" {
             if nodeA.name == "boundary" { nodeB.removeFromParent() }
             else { nodeA.removeFromParent() }
+            score -= 1 // Player is punished for not shooting enemies
         }
         
         // Player is taking damage (except with the boundaries)
