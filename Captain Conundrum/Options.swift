@@ -30,31 +30,31 @@ class Options: SKScene {
         musicToggle = childNode(withName: "musicToggle") as! MSButtonNode
         comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
         
-        buttonControls.selectedHandler = {
+        buttonControls.selectedHandler = { [unowned self] in
             self.comingSoon.isHidden = false
         }
         
-        buttonCredits.selectedHandler = {
+        buttonCredits.selectedHandler = { [unowned self] in
             self.comingSoon.isHidden = false
         }
         
-        buttonCustomize.selectedHandler = {
+        buttonCustomize.selectedHandler = { [unowned self] in
             self.comingSoon.isHidden = false
         }
         
-        leaderboards.selectedHandler = {
+        leaderboards.selectedHandler = { [unowned self] in
             self.comingSoon.isHidden = false
         }
         
-        achievements.selectedHandler = {
+        achievements.selectedHandler = { [unowned self] in
             self.comingSoon.isHidden = false
         }
         
-        buttonBack.selectedHandler = {
+        buttonBack.selectedHandler = { [unowned self] in
             self.loadMainMenu()
         }
         
-        musicToggle.selectedHandler = {
+        musicToggle.selectedHandler = { [unowned self] in
             self.comingSoon.isHidden = false
         }
     }

@@ -8,9 +8,10 @@
 
 import SpriteKit
 
-class MainMenu: SKScene {
+class MainMenu: SKScene, SKPhysicsContactDelegate {
     var player: MSButtonNode!
     var blast: SKSpriteNode!
+    var titleNode: SKSpriteNode!
     var buttonStart: MSButtonNode!
     var buttonOptions: MSButtonNode!
     var scrollLayer: SKNode!
@@ -20,11 +21,12 @@ class MainMenu: SKScene {
     override func didMove(to view: SKView) {
         player = childNode(withName: "player") as! MSButtonNode
         blast = childNode(withName: "blast") as! SKSpriteNode
+        titleNode = childNode(withName: "titleNode") as! SKSpriteNode
         buttonStart = childNode(withName: "buttonStart") as! MSButtonNode
         buttonOptions = childNode(withName: "buttonOptions") as! MSButtonNode
         scrollLayer = childNode(withName: "scrollLayer")
         
-        player.selectedHandler = {
+        player.selectedHandler = { [unowned self] in // Prevents memory leaks from MSButtonNode
             self.blast.physicsBody?.velocity = CGVector(dx: 0, dy: 500) // Secret button!
             
             if self.blast.position.y >= 325 {
@@ -32,13 +34,15 @@ class MainMenu: SKScene {
             }
         }
         
-        buttonStart.selectedHandler = {
+        buttonStart.selectedHandler = { [unowned self] in
             self.loadGame()
         }
         
-        buttonOptions.selectedHandler = {
+        buttonOptions.selectedHandler = { [unowned self] in
             self.loadOptions()
         }
+        
+        physicsWorld.contactDelegate = self
     }
     
     func loadGame() {
@@ -87,6 +91,37 @@ class MainMenu: SKScene {
             if starPosition.y <= -305 { // Offscreen
                 let newPosition = CGPoint(x: starPosition.x, y: (self.size.height / 2) + star.size.height)
                 star.position = self.convert(newPosition, to: scrollLayer)
+            }
+        }
+    }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        let contactA = contact.bodyA
+        let contactB = contact.bodyB
+        
+        guard let nodeA = contactA.node else { return }
+        guard let nodeB = contactB.node else { return }
+        
+        if nodeA.name == "blast" && nodeB.name == "titleNode" || nodeA.name == "titleNode" && nodeB.name == "blast" {
+            if nodeA.name == "blast" {
+                // Title will spin out of control!
+                nodeA.position.y = 0
+                titleNode = nodeB as! SKSpriteNode
+                titleNode.physicsBody?.angularVelocity = 50
+                titleNode.physicsBody?.velocity = CGVector(dx: 0, dy: -400)
+                
+                if titleNode.position.y <= -310 {
+                    titleNode.removeFromParent()
+                }
+            } else {
+                nodeB.position.y = 0
+                titleNode = nodeA as! SKSpriteNode
+                titleNode.physicsBody?.angularVelocity = 50
+                titleNode.physicsBody?.velocity = CGVector(dx: 0, dy: -400)
+                
+                if titleNode.position.y <= -310 {
+                    titleNode.removeFromParent()
+                }
             }
         }
     }

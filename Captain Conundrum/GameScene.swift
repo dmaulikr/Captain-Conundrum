@@ -143,20 +143,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
         healthBar = childNode(withName: "healthBar") as! SKSpriteNode
         
-        buttonPause.selectedHandler = {
+        buttonPause.selectedHandler = { [unowned self] in
             if self.gameState == .gameOver { return }
             self.gameState = .paused
             self.boxPause.isHidden = false
             self.isPaused = true
         }
         
-        buttonContinue.selectedHandler = {
+        buttonContinue.selectedHandler = { [unowned self] in
             self.gameState = .active
             self.boxPause.isHidden = true
             self.isPaused = false
         }
         
-        buttonQuit.selectedHandler = {
+        buttonQuit.selectedHandler = { [unowned self] in
             guard let skView = self.view as SKView! else {
                 print("Cound not get SKview")
                 return
@@ -175,7 +175,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             skView.presentScene(scene, transition: fade)
         }
         
-        buttonRetry.selectedHandler = {
+        buttonRetry.selectedHandler = { [unowned self] in
             self.boxGameOver.position.x = -286
             
             guard let skView = self.view as SKView! else {
