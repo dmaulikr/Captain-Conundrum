@@ -54,6 +54,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var motionManager: CMMotionManager!
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
     var numberOfBlasts = 0
+    var ufoArray: [SKSpriteNode] = []
+    var ufoData: [(action: Int, originalPosition: CGFloat)] = []
+    var actionIndex = 0 // For UFO movement
     var isTouching = false
     var gameStart = false
     var gameState: GameState = .active
@@ -263,6 +266,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 newUFO.position = enemyPosition
                 newUFO.physicsBody?.velocity = CGVector(dx: enemySpeed["ufoX"]!, dy: enemySpeed["ufoY"]!) // Zigzag
                 addChild(newUFO)
+                ufoArray.append(newUFO) // UFO collection
+                ufoData.append((0, 0))  // UFO behavior
         }
         
         spawnTimer = 0
@@ -303,7 +308,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if gameStart {
             spawnTimer += fixedDelta
             for (enemy, speed) in enemySpeed {
-                enemySpeed[enemy] = speed - 0.01 // Overtime, enemies speed up to increase difficulty
+                // Overtime, enemies speed up to increase difficulty
+                if speed > 0 {
+                    enemySpeed[enemy] = speed + 0.01
+                } else {
+                    enemySpeed[enemy] = speed - 0.01
+                }
             }
         }
         
@@ -313,6 +323,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if touchTime >= 0.5 { // Auto-fire every 0.5 seconds
                 shoot()
                 touchTime = 0
+            }
+        }
+        
+        for ufo in ufoArray {
+            // +X, -Y; 0 = +dx, 1 = -dx
+            guard let index = ufoArray.index(of: ufo) else { return }
+            
+            // UFO is moving to the side and is about to hit a wall
+            if ufoData[index].action == 0 && ufo.position.x >= 130 || ufoData[index].action == 1 && ufo.position.x <= -130 {
+                ufoData[index].originalPosition = ufo.position.y
+                ufo.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufoY"]!)
+            }
+            
+            // UFO is moving down and is about to change direction
+            if ufoData[index].originalPosition != 0 && ufoData[index].originalPosition - ufo.position.y >= 50 {
+                ufoData[index].originalPosition = 0
+                if ufoData[index].action == 0 {
+                    ufo.physicsBody?.velocity = CGVector(dx: enemySpeed["ufoY"]!, dy: 0)
+                    ufoData[index].action += 1
+                } else {
+                    ufo.physicsBody?.velocity = CGVector(dx: enemySpeed["ufoX"]!, dy: 0)
+                    ufoData[index].action -= 1
+                }
             }
         }
     }
@@ -380,6 +413,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "ufo" || nodeA.name == "ufo" && nodeB.name == "attack" {
+            if nodeA.name == "ufo" {
+                let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode)
+                ufoData.remove(at: ufoIndex!)
+                ufoArray.remove(at: ufoIndex!)
+            } else {
+                let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode)
+                ufoData.remove(at: ufoIndex!)
+                ufoArray.remove(at: ufoIndex!)
+            }
             nodeA.removeFromParent()
             nodeB.removeFromParent()
             numberOfBlasts -= 1
@@ -392,7 +434,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "ufo" && nodeB.name == "boundarySide" || nodeA.name == "boundarySide" && nodeB.name == "ufo" {
-            enemySpeed["ufoX"] = -enemySpeed["ufoX"]!
+            /*enemySpeed["ufoY"] = enemySpeed["ufoX"]
+            //enemySpeed["ufoX"] = 0
+            if nodeA.name == "ufo" {
+                let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode)
+                if actionIndex == 0 {
+                    ufoArray[ufoIndex!].physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufoY"]!/*-enemySpeed["ufoX"]!*/)
+                } else {
+                    ufoArray[ufoIndex!].physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufoX"]!)
+                }
+            } else {
+                let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode)
+                if actionIndex == 0 {
+                    ufoArray[ufoIndex!].physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufoY"]!/*-enemySpeed["ufoX"]!*/)
+                } else {
+                    ufoArray[ufoIndex!].physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufoX"]!)
+                }
+            }*/
         }
         
         // Blasts are going offscreen
@@ -404,6 +462,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Enemies are going offscreen
         if nodeA.name == "meteor" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "meteor" || nodeA.name == "satellite" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "satellite" || nodeA.name == "rocket" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "rocket" || nodeA.name == "ufo" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "ufo" {
+            if nodeA.name == "ufo" {
+                ufoData.remove(at: ufoArray.index(of: nodeA as! SKSpriteNode)!)
+                ufoArray.remove(at: ufoArray.index(of: nodeA as! SKSpriteNode)!)
+            }
+            else if nodeB.name == "ufo" {
+                ufoData.remove(at: ufoArray.index(of: nodeB as! SKSpriteNode)!)
+                ufoArray.remove(at: ufoArray.index(of: nodeB as! SKSpriteNode)!)
+            }
+            
             if nodeA.name == "boundary" { nodeB.removeFromParent() }
             else { nodeA.removeFromParent() }
             score -= 1 // Player is punished for not shooting enemies
@@ -411,6 +478,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Player is taking damage (except with the boundaries)
         if nodeA.name == "player" && (nodeB.name != "boundary" && nodeB.name != "boundarySide") || (nodeA.name != "boundary" && nodeA.name != "boundarySide") && nodeB.name == "player" {
+            if nodeA.name == "ufo" {
+                ufoData.remove(at: ufoArray.index(of: nodeA as! SKSpriteNode)!)
+                ufoArray.remove(at: ufoArray.index(of: nodeA as! SKSpriteNode)!)
+            }
+            else if nodeB.name == "ufo" {
+                ufoData.remove(at: ufoArray.index(of: nodeA as! SKSpriteNode)!)
+                ufoArray.remove(at: ufoArray.index(of: nodeB as! SKSpriteNode)!)
+            }
+            
             if nodeA.name != "player" && nodeA.name != "boundary" { nodeA.removeFromParent() }
             else if nodeB.name != "player" && nodeB.name != "boundary" { nodeB.removeFromParent() }
             
