@@ -55,8 +55,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
     var numberOfBlasts = 0
     var ufoArray: [SKSpriteNode] = []
-    var ufoData: [(action: Int, originalPosition: CGFloat)] = []
-    var actionIndex = 0 // For UFO movement
+    var ufoData: [(action: Int, originalPosition: CGFloat, timer: CFTimeInterval)] = []
     var isTouching = false
     var gameStart = false
     var gameState: GameState = .active
@@ -77,6 +76,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         blast.physicsBody?.categoryBitMask = 4
         blast.physicsBody?.collisionBitMask = 4
         blast.physicsBody?.contactTestBitMask = 122 // In contact with all enemies and boundaries
+        return blast
+    } ()
+    
+    var ufoAttack: SKSpriteNode = {
+        let blast = SKSpriteNode(imageNamed: "laserBlue05")
+        blast.name = "ufoAttack"
+        blast.zPosition = 1
+        blast.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: blast.size.width, height: blast.size.height))
+        blast.physicsBody?.allowsRotation = false
+        blast.physicsBody?.affectedByGravity = false
+        blast.physicsBody?.categoryBitMask = 256
+        blast.physicsBody?.collisionBitMask = 256
+        blast.physicsBody?.contactTestBitMask = 258 // In contact with player and bottom boundary
         return blast
     } ()
     
@@ -197,7 +209,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(multiAttack)
         multiAttack.position = player.position
         multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: 500)
-        //attack = multiAttack // Will allow any code that involves attack outside function to work
         numberOfBlasts += 1
     }
     
@@ -267,7 +278,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 newUFO.physicsBody?.velocity = CGVector(dx: enemySpeed["ufo+"]!, dy: enemySpeed["ufo-"]!) // Zigzag
                 addChild(newUFO)
                 ufoArray.append(newUFO) // UFO collection
-                ufoData.append((0, 0))  // UFO behavior
+                ufoData.append((0, 0, 0))  // UFO behavior
         }
         
         spawnTimer = 0
@@ -278,6 +289,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for ufo in ufoArray {
             // Action: 0 = +dx, 1 = -dx
             guard let index = ufoArray.index(of: ufo) else { return }
+            ufoData[index].timer += fixedDelta
+            
+            // Every 2 seconds, the UFO fires
+            if ufoData[index].timer >= 2 {
+                let multiAttack = ufoAttack.copy() as! SKSpriteNode
+                addChild(multiAttack)
+                multiAttack.position = ufo.position
+                multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: -250)
+                ufoData[index].timer = 0
+            }
             
             // UFO is moving to the side and is about to hit a wall
             if ufoData[index].action == 0 && ufo.position.x >= 125 || ufoData[index].action == 1 && ufo.position.x <= -125 {
@@ -448,6 +469,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if nodeA.name == "attack" { nodeA.removeFromParent() }
             else { nodeB.removeFromParent() }
             numberOfBlasts -= 1
+        }
+        
+        if nodeA.name == "ufoAttack" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "ufoAttack" {
+            if nodeA.name == "ufoAttack" { nodeA.removeFromParent() }
+            else { nodeB.removeFromParent() }
         }
         
         // Enemies are going offscreen
