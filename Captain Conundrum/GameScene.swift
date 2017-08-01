@@ -40,7 +40,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         "meteor": -100,
         "satelliteX": -200, "satelliteY": -200,
         "rocket": -300,
-        "ufoX": 150, "ufoY": -150
+        "ufo+": 150, "ufo-": -150
     ]
     
     // Timers (in seconds)
@@ -264,13 +264,48 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             default:
                 let newUFO = ufo.copy() as! SKSpriteNode
                 newUFO.position = enemyPosition
-                newUFO.physicsBody?.velocity = CGVector(dx: enemySpeed["ufoX"]!, dy: enemySpeed["ufoY"]!) // Zigzag
+                newUFO.physicsBody?.velocity = CGVector(dx: enemySpeed["ufo+"]!, dy: enemySpeed["ufo-"]!) // Zigzag
                 addChild(newUFO)
                 ufoArray.append(newUFO) // UFO collection
                 ufoData.append((0, 0))  // UFO behavior
         }
         
         spawnTimer = 0
+    }
+    
+    func ufoAI() {
+        // Controls the behavior of each UFO
+        for ufo in ufoArray {
+            // Action: 0 = +dx, 1 = -dx
+            guard let index = ufoArray.index(of: ufo) else { return }
+            
+            // UFO is moving to the side and is about to hit a wall
+            if ufoData[index].action == 0 && ufo.position.x >= 125 || ufoData[index].action == 1 && ufo.position.x <= -125 {
+                // UFO won't collide with side boundaries
+                ufoData[index].originalPosition = ufo.position.y
+                ufo.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufo-"]!)
+                
+                if ufoData[index].action == 0 { ufoData[index].action += 1 }
+                else { ufoData[index].action -= 1 }
+            }
+            
+            // UFO is moving down and is about to change direction
+            if ufoData[index].originalPosition != 0 && ufoData[index].originalPosition - ufo.position.y >= 150 {
+                ufoData[index].originalPosition = 0
+                
+                if ufoData[index].action == 0 {
+                    ufo.physicsBody?.velocity = CGVector(dx: enemySpeed["ufo+"]!, dy: 0)
+                } else {
+                    ufo.physicsBody?.velocity = CGVector(dx: enemySpeed["ufo-"]!, dy: 0)
+                }
+            }
+            
+            // Ensures UFO is avoidable when close to player
+            if ufo.position.y <= -140 {
+                ufo.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufo-"]!)
+                ufoData[index].action = 2
+            }
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -326,28 +361,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        for ufo in ufoArray {
-            // +X, -Y; 0 = +dx, 1 = -dx
-            guard let index = ufoArray.index(of: ufo) else { return }
-            
-            // UFO is moving to the side and is about to hit a wall
-            if ufoData[index].action == 0 && ufo.position.x >= 130 || ufoData[index].action == 1 && ufo.position.x <= -130 {
-                ufoData[index].originalPosition = ufo.position.y
-                ufo.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufoY"]!)
-            }
-            
-            // UFO is moving down and is about to change direction
-            if ufoData[index].originalPosition != 0 && ufoData[index].originalPosition - ufo.position.y >= 50 {
-                ufoData[index].originalPosition = 0
-                if ufoData[index].action == 0 {
-                    ufo.physicsBody?.velocity = CGVector(dx: enemySpeed["ufoY"]!, dy: 0)
-                    ufoData[index].action += 1
-                } else {
-                    ufo.physicsBody?.velocity = CGVector(dx: enemySpeed["ufoX"]!, dy: 0)
-                    ufoData[index].action -= 1
-                }
-            }
-        }
+        ufoAI()
     }
     
     func playerScoreUpdate() {
@@ -369,12 +383,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let contactA = contact.bodyA
         let contactB = contact.bodyB
         // If player decides to go insane, nodes won't even be ready!
-        guard let nodeA = contactA.node else {
-            return
-        }
-        guard let nodeB = contactB.node else {
-            return
-        }
+        guard let nodeA = contactA.node else { return }
+        guard let nodeB = contactB.node else { return }
         
         // Player is doing damage
         if nodeA.name == "attack" && nodeB.name == "initialMeteor" || nodeA.name == "initialMeteor" && nodeB.name == "attack" {
@@ -428,29 +438,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             score += 20
         }
         
-        // Satellite or UFO hits the side
+        // Satellite hits the side
         if nodeA.name == "satellite" && nodeB.name == "boundarySide" || nodeA.name == "boundarySide" && nodeB.name == "satellite" {
             enemySpeed["satelliteX"] = -enemySpeed["satelliteX"]!
-        }
-        
-        if nodeA.name == "ufo" && nodeB.name == "boundarySide" || nodeA.name == "boundarySide" && nodeB.name == "ufo" {
-            /*enemySpeed["ufoY"] = enemySpeed["ufoX"]
-            //enemySpeed["ufoX"] = 0
-            if nodeA.name == "ufo" {
-                let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode)
-                if actionIndex == 0 {
-                    ufoArray[ufoIndex!].physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufoY"]!/*-enemySpeed["ufoX"]!*/)
-                } else {
-                    ufoArray[ufoIndex!].physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufoX"]!)
-                }
-            } else {
-                let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode)
-                if actionIndex == 0 {
-                    ufoArray[ufoIndex!].physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufoY"]!/*-enemySpeed["ufoX"]!*/)
-                } else {
-                    ufoArray[ufoIndex!].physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufoX"]!)
-                }
-            }*/
         }
         
         // Blasts are going offscreen
@@ -463,12 +453,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Enemies are going offscreen
         if nodeA.name == "meteor" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "meteor" || nodeA.name == "satellite" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "satellite" || nodeA.name == "rocket" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "rocket" || nodeA.name == "ufo" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "ufo" {
             if nodeA.name == "ufo" {
-                ufoData.remove(at: ufoArray.index(of: nodeA as! SKSpriteNode)!)
-                ufoArray.remove(at: ufoArray.index(of: nodeA as! SKSpriteNode)!)
-            }
-            else if nodeB.name == "ufo" {
-                ufoData.remove(at: ufoArray.index(of: nodeB as! SKSpriteNode)!)
-                ufoArray.remove(at: ufoArray.index(of: nodeB as! SKSpriteNode)!)
+                let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode)
+                ufoData.remove(at: ufoIndex!)
+                ufoArray.remove(at: ufoIndex!)
+            } else if nodeB.name == "ufo" {
+                let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode)
+                ufoData.remove(at: ufoIndex!)
+                ufoArray.remove(at: ufoIndex!)
             }
             
             if nodeA.name == "boundary" { nodeB.removeFromParent() }
@@ -479,12 +470,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Player is taking damage (except with the boundaries)
         if nodeA.name == "player" && (nodeB.name != "boundary" && nodeB.name != "boundarySide") || (nodeA.name != "boundary" && nodeA.name != "boundarySide") && nodeB.name == "player" {
             if nodeA.name == "ufo" {
-                ufoData.remove(at: ufoArray.index(of: nodeA as! SKSpriteNode)!)
-                ufoArray.remove(at: ufoArray.index(of: nodeA as! SKSpriteNode)!)
-            }
-            else if nodeB.name == "ufo" {
-                ufoData.remove(at: ufoArray.index(of: nodeA as! SKSpriteNode)!)
-                ufoArray.remove(at: ufoArray.index(of: nodeB as! SKSpriteNode)!)
+                let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode)
+                ufoData.remove(at: ufoIndex!)
+                ufoArray.remove(at: ufoIndex!)
+            } else if nodeB.name == "ufo" {
+                let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode)
+                ufoData.remove(at: ufoIndex!)
+                ufoArray.remove(at: ufoIndex!)
             }
             
             if nodeA.name != "player" && nodeA.name != "boundary" { nodeA.removeFromParent() }
