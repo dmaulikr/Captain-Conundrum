@@ -54,6 +54,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var motionManager: CMMotionManager!
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
     var numberOfBlasts = 0
+    var hits: Double = 0
+    var misses: Double = 0
     var ufoArray: [SKSpriteNode] = []
     var ufoData: [(action: Int, originalPosition: CGFloat, timer: CFTimeInterval)] = []
     var isTouching = false
@@ -119,6 +121,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         label.position = CGPoint(x: 0, y: 125)
         label.zPosition = 2
         label.text = "New Record!"
+        return label
+    } ()
+    
+    var hitsMessage: SKLabelNode = {
+        let label = SKLabelNode(fontNamed: "Britannic Bold")
+        label.fontSize = 36
+        label.fontColor = .green
+        label.position = CGPoint(x: 0, y: -130)
+        label.zPosition = 2
+        return label
+    } ()
+    
+    var missMessage: SKLabelNode = {
+        let label = SKLabelNode(fontNamed: "Britannic Bold")
+        label.fontSize = 36
+        label.fontColor = .red
+        label.position = CGPoint(x: 0, y: -180)
+        label.zPosition = 2
+        return label
+    } ()
+    
+    var ratioMessage: SKLabelNode = {
+        let label = SKLabelNode(fontNamed: "Britannic Bold")
+        label.fontSize = 32
+        label.fontColor = .yellow
+        label.position = CGPoint(x: 0, y: -230)
+        label.zPosition = 2
         return label
     } ()
     
@@ -413,6 +442,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             nodeB.removeFromParent()
             numberOfBlasts -= 1
             initialMeteorsHit += 1
+            hits += 1
             if initialMeteorsHit == 3 {
                 addChild(startMessage) // Player has completed tutorial section
                 scoreLabel.isHidden = false
@@ -426,6 +456,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             nodeA.removeFromParent()
             nodeB.removeFromParent()
             numberOfBlasts -= 1
+            hits += 1
             score += 1
         }
         
@@ -433,6 +464,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             nodeA.removeFromParent()
             nodeB.removeFromParent()
             numberOfBlasts -= 1
+            hits += 1
             score += 5
         }
         
@@ -440,6 +472,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             nodeA.removeFromParent()
             nodeB.removeFromParent()
             numberOfBlasts -= 1
+            hits += 1
             score += 10
         }
         
@@ -456,6 +489,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             nodeA.removeFromParent()
             nodeB.removeFromParent()
             numberOfBlasts -= 1
+            hits += 1
             score += 20
         }
         
@@ -469,6 +503,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if nodeA.name == "attack" { nodeA.removeFromParent() }
             else { nodeB.removeFromParent() }
             numberOfBlasts -= 1
+            misses += 1
         }
         
         if nodeA.name == "ufoAttack" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "ufoAttack" {
@@ -518,6 +553,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 else { nodeB.removeFromParent() }
                 gameState = .gameOver
                 playerScoreUpdate()
+                
+                addChild(hitsMessage)
+                hitsMessage.text = "Hits: " + String(format: "%.0f", hits)
+                addChild(missMessage)
+                missMessage.text = "Misses: " + String(format: "%.0f", misses)
+                addChild(ratioMessage) // Round to 2 decimal places
+                ratioMessage.text = "Hit-Miss Ratio: " + String(format: "%.2f", hits/(hits + misses))
             }
         }
     }
