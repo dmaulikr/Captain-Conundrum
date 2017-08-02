@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		250A34AD1F32202F001E110C /* Fire.sks in Resources */ = {isa = PBXBuildFile; fileRef = 250A34AC1F32202F001E110C /* Fire.sks */; };
 		25192DE81F262E4800722D8F /* digital-sfx-set in Resources */ = {isa = PBXBuildFile; fileRef = 25192DE71F262E4800722D8F /* digital-sfx-set */; };
 		25192DEA1F262E6B00722D8F /* ui-sfx-set in Resources */ = {isa = PBXBuildFile; fileRef = 25192DE91F262E6B00722D8F /* ui-sfx-set */; };
 		254CF4191F26262F008711BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254CF4181F26262F008711BC /* AppDelegate.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		250A34AC1F32202F001E110C /* Fire.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Fire.sks; sourceTree = "<group>"; };
 		25192DE71F262E4800722D8F /* digital-sfx-set */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "digital-sfx-set"; sourceTree = "<group>"; };
 		25192DE91F262E6B00722D8F /* ui-sfx-set */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "ui-sfx-set"; sourceTree = "<group>"; };
 		254CF4151F26262F008711BC /* Captain Conundrum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Captain Conundrum.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,6 +94,7 @@
 				25EFF5601F26685C0096F4FA /* Options.sks */,
 				254CF41A1F26262F008711BC /* GameScene.sks */,
 				254CF41C1F26262F008711BC /* Actions.sks */,
+				250A34AC1F32202F001E110C /* Fire.sks */,
 				25EFF55C1F265F670096F4FA /* MainMenu.swift */,
 				25EFF5621F26720F0096F4FA /* Options.swift */,
 				254CF41E1F26262F008711BC /* GameScene.swift */,
@@ -169,6 +172,7 @@
 				254CF4241F26262F008711BC /* Main.storyboard in Resources */,
 				25192DEA1F262E6B00722D8F /* ui-sfx-set in Resources */,
 				25EFF5611F26685C0096F4FA /* Options.sks in Resources */,
+				250A34AD1F32202F001E110C /* Fire.sks in Resources */,
 				254CF41B1F26262F008711BC /* GameScene.sks in Resources */,
 				25192DE81F262E4800722D8F /* digital-sfx-set in Resources */,
 				254CF4261F26262F008711BC /* Assets.xcassets in Resources */,

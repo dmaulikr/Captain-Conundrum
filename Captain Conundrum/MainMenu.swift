@@ -43,6 +43,9 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         }
         
         physicsWorld.contactDelegate = self
+        let thrusters = SKEmitterNode(fileNamed: "Fire")!
+        thrusters.position.y = -45
+        addChild(thrusters)
     }
     
     func loadGame() {

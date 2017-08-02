@@ -56,6 +56,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var numberOfBlasts = 0
     var hits: Double = 0
     var misses: Double = 0
+    var rocketArray: [SKSpriteNode] = []
     var ufoArray: [SKSpriteNode] = []
     var ufoData: [(action: Int, originalPosition: CGFloat, timer: CFTimeInterval)] = []
     var isTouching = false
@@ -311,6 +312,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 newRocket.position = enemyPosition
                 newRocket.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["rocket"]!) // Fall quickly
                 addChild(newRocket)
+                rocketArray.append(newRocket) // Rocket collection
             default:
                 let newUFO = ufo.copy() as! SKSpriteNode
                 newUFO.position = enemyPosition
@@ -421,6 +423,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        for rocket in rocketArray {
+            let thruster = SKEmitterNode(fileNamed: "Fire")!
+            thruster.emissionAngle = 90 // Rocket is facing other way from player
+            thruster.position = CGPoint(x: rocket.position.x, y: rocket.position.y + 50)
+            thruster.zPosition = 1
+            addChild(thruster)
+            // Thrusters will stay for a split second before leaving
+            let wait = SKAction.wait(forDuration: 0.1)
+            let removeParticles = SKAction.removeFromParent()
+            let seq = SKAction.sequence([wait, removeParticles])
+            thruster.run(seq)
+        }
+        
         ufoAI()
     }
     
@@ -485,6 +500,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "rocket" || nodeA.name == "rocket" && nodeB.name == "attack" {
+            if nodeA.name == "rocket" {
+                let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode)
+                rocketArray.remove(at: rocketIndex!)
+            } else {
+                let rocketIndex = rocketArray.index(of: nodeB as! SKSpriteNode)
+                rocketArray.remove(at: rocketIndex!)
+            }
+            
             nodeA.removeFromParent()
             nodeB.removeFromParent()
             numberOfBlasts -= 1
@@ -529,7 +552,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Enemies are going offscreen
         if nodeA.name == "meteor" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "meteor" || nodeA.name == "satellite" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "satellite" || nodeA.name == "rocket" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "rocket" || nodeA.name == "ufo" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "ufo" {
-            if nodeA.name == "ufo" {
+            if nodeA.name == "rocket" {
+                let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode)
+                rocketArray.remove(at: rocketIndex!)
+            } else if nodeB.name == "rocket" {
+                let rocketIndex = rocketArray.index(of: nodeB as! SKSpriteNode)
+                rocketArray.remove(at: rocketIndex!)
+            } else if nodeA.name == "ufo" {
                 let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode)
                 ufoData.remove(at: ufoIndex!)
                 ufoArray.remove(at: ufoIndex!)
@@ -546,7 +575,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Player is taking damage (except with the boundaries)
         if nodeA.name == "player" && (nodeB.name != "boundary" && nodeB.name != "boundarySide") || (nodeA.name != "boundary" && nodeA.name != "boundarySide") && nodeB.name == "player" {
-            if nodeA.name == "ufo" {
+            if nodeA.name == "rocket" {
+                let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode)
+                rocketArray.remove(at: rocketIndex!)
+            } else if nodeB.name == "rocket" {
+                let rocketIndex = rocketArray.index(of: nodeB as! SKSpriteNode)
+                rocketArray.remove(at: rocketIndex!)
+            } else if nodeA.name == "ufo" {
                 let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode)
                 ufoData.remove(at: ufoIndex!)
                 ufoArray.remove(at: ufoIndex!)
