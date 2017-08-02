@@ -114,6 +114,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return label
     } ()
     
+    var lowScoreLabel: SKLabelNode = {
+        let label = SKLabelNode(fontNamed: "Britannic Bold")
+        label.fontSize = 36
+        label.fontColor = .cyan
+        label.position = CGPoint(x: 0, y: 175)
+        label.zPosition = 2
+        label.text = "Low Score: \(UserDefaults().integer(forKey: "lowscore"))"
+        return label
+    } ()
+    
     var newRecordLabel: SKLabelNode = {
         let label = SKLabelNode(fontNamed: "Britannic Bold")
         label.fontSize = 36
@@ -416,12 +426,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func playerScoreUpdate() {
         // Called once player loses
-        addChild(highScoreLabel)
+        if score >= 0 { addChild(highScoreLabel) }
+        else { addChild(lowScoreLabel) }
         let highScore = UserDefaults().integer(forKey: "highscore")
+        let lowScore = UserDefaults().integer(forKey: "lowscore")
         
         if score > highScore {
             UserDefaults().set(score, forKey: "highscore") // New high score set
             highScoreLabel.text = "High Score: \(score)"
+            addChild(newRecordLabel)
+        } else if score < lowScore {
+            UserDefaults().set(score, forKey: "lowscore") // New low score set
+            lowScoreLabel.text = "Low Score: \(score)"
             addChild(newRecordLabel)
         }
     }
