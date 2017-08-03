@@ -95,6 +95,10 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
                 let newPosition = CGPoint(x: starPosition.x, y: (self.size.height / 2) + star.size.height)
                 star.position = self.convert(newPosition, to: scrollLayer)
             }
+            
+            if titleNode.position.y <= -310 {
+                titleNode.removeFromParent()
+            }
         }
     }
     
@@ -107,24 +111,15 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         
         if nodeA.name == "blast" && nodeB.name == "titleNode" || nodeA.name == "titleNode" && nodeB.name == "blast" {
             if nodeA.name == "blast" {
+                blast.position.y = 0
                 // Title will spin out of control!
-                nodeA.position.y = 0
                 titleNode = nodeB as! SKSpriteNode
                 titleNode.physicsBody?.angularVelocity = 50
                 titleNode.physicsBody?.velocity = CGVector(dx: 0, dy: -400)
-                
-                if titleNode.position.y <= -310 {
-                    titleNode.removeFromParent()
-                }
             } else {
-                nodeB.position.y = 0
                 titleNode = nodeA as! SKSpriteNode
                 titleNode.physicsBody?.angularVelocity = 50
                 titleNode.physicsBody?.velocity = CGVector(dx: 0, dy: -400)
-                
-                if titleNode.position.y <= -310 {
-                    titleNode.removeFromParent()
-                }
             }
         }
     }

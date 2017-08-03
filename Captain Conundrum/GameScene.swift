@@ -459,7 +459,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func didBegin(_ contact: SKPhysicsContact) {
         // Called when two bodies make contact
-        if gameState != .active { return }
+        if gameState != .active { return } // Once hit, the enemy can't be hit mid-explosion
         
         let contactA = contact.bodyA
         let contactB = contact.bodyB
@@ -469,8 +469,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Player is doing damage
         if nodeA.name == "attack" && nodeB.name == "initialMeteor" || nodeA.name == "initialMeteor" && nodeB.name == "attack" {
-            nodeA.removeFromParent()
-            nodeB.removeFromParent()
+            if nodeA.name == "initialMeteor" {
+                contactA.categoryBitMask = 0 // Once hit, the enemy can't be hit mid-explosion
+                nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeB.removeFromParent()
+            } else {
+                contactB.categoryBitMask = 0
+                nodeB.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeA.removeFromParent()
+            }
+            
             numberOfBlasts -= 1
             initialMeteorsHit += 1
             hits += 1
@@ -484,16 +492,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "meteor" || nodeA.name == "meteor" && nodeB.name == "attack" {
-            nodeA.removeFromParent()
-            nodeB.removeFromParent()
+            if nodeA.name == "meteor" {
+                contactA.categoryBitMask = 0
+                nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeB.removeFromParent()
+            } else {
+                contactB.categoryBitMask = 0
+                nodeB.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeA.removeFromParent()
+            }
+            
             numberOfBlasts -= 1
             hits += 1
             score += 1
         }
         
         if nodeA.name == "attack" && nodeB.name == "satellite" || nodeA.name == "satellite" && nodeB.name == "attack" {
-            nodeA.removeFromParent()
-            nodeB.removeFromParent()
+            if nodeA.name == "satellite" {
+                contactA.categoryBitMask = 0
+                nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeB.removeFromParent()
+            } else {
+                contactB.categoryBitMask = 0
+                nodeB.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeA.removeFromParent()
+            }
+            
             numberOfBlasts -= 1
             hits += 1
             score += 5
@@ -501,15 +525,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if nodeA.name == "attack" && nodeB.name == "rocket" || nodeA.name == "rocket" && nodeB.name == "attack" {
             if nodeA.name == "rocket" {
-                let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode)
-                rocketArray.remove(at: rocketIndex!)
+                contactA.categoryBitMask = 0
+                guard let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode) else { return }
+                rocketArray.remove(at: rocketIndex)
+                nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeB.removeFromParent()
             } else {
-                let rocketIndex = rocketArray.index(of: nodeB as! SKSpriteNode)
-                rocketArray.remove(at: rocketIndex!)
+                contactB.categoryBitMask = 0
+                guard let rocketIndex = rocketArray.index(of: nodeB as! SKSpriteNode) else { return }
+                rocketArray.remove(at: rocketIndex)
+                nodeB.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeA.removeFromParent()
             }
             
-            nodeA.removeFromParent()
-            nodeB.removeFromParent()
             numberOfBlasts -= 1
             hits += 1
             score += 10
@@ -517,16 +545,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if nodeA.name == "attack" && nodeB.name == "ufo" || nodeA.name == "ufo" && nodeB.name == "attack" {
             if nodeA.name == "ufo" {
-                let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode)
-                ufoData.remove(at: ufoIndex!)
-                ufoArray.remove(at: ufoIndex!)
+                contactA.categoryBitMask = 0
+                guard let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode) else { return }
+                ufoData.remove(at: ufoIndex)
+                ufoArray.remove(at: ufoIndex)
+                nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeB.removeFromParent()
             } else {
-                let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode)
-                ufoData.remove(at: ufoIndex!)
-                ufoArray.remove(at: ufoIndex!)
+                contactB.categoryBitMask = 0
+                guard let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode) else { return }
+                ufoData.remove(at: ufoIndex)
+                ufoArray.remove(at: ufoIndex)
+                nodeB.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeA.removeFromParent()
             }
-            nodeA.removeFromParent()
-            nodeB.removeFromParent()
+            
             numberOfBlasts -= 1
             hits += 1
             score += 20
@@ -553,19 +586,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Enemies are going offscreen
         if nodeA.name == "meteor" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "meteor" || nodeA.name == "satellite" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "satellite" || nodeA.name == "rocket" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "rocket" || nodeA.name == "ufo" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "ufo" {
             if nodeA.name == "rocket" {
-                let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode)
-                rocketArray.remove(at: rocketIndex!)
+                guard let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode) else { return }
+                rocketArray.remove(at: rocketIndex)
             } else if nodeB.name == "rocket" {
-                let rocketIndex = rocketArray.index(of: nodeB as! SKSpriteNode)
-                rocketArray.remove(at: rocketIndex!)
+                guard let rocketIndex = rocketArray.index(of: nodeB as! SKSpriteNode) else { return }
+                rocketArray.remove(at: rocketIndex)
             } else if nodeA.name == "ufo" {
-                let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode)
-                ufoData.remove(at: ufoIndex!)
-                ufoArray.remove(at: ufoIndex!)
+                guard let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode) else { return }
+                ufoData.remove(at: ufoIndex)
+                ufoArray.remove(at: ufoIndex)
             } else if nodeB.name == "ufo" {
-                let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode)
-                ufoData.remove(at: ufoIndex!)
-                ufoArray.remove(at: ufoIndex!)
+                guard let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode) else { return }
+                ufoData.remove(at: ufoIndex)
+                ufoArray.remove(at: ufoIndex)
             }
             
             if nodeA.name == "boundary" { nodeB.removeFromParent() }
@@ -576,19 +609,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Player is taking damage (except with the boundaries)
         if nodeA.name == "player" && (nodeB.name != "boundary" && nodeB.name != "boundarySide") || (nodeA.name != "boundary" && nodeA.name != "boundarySide") && nodeB.name == "player" {
             if nodeA.name == "rocket" {
-                let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode)
-                rocketArray.remove(at: rocketIndex!)
+                guard let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode) else { return }
+                rocketArray.remove(at: rocketIndex)
             } else if nodeB.name == "rocket" {
-                let rocketIndex = rocketArray.index(of: nodeB as! SKSpriteNode)
-                rocketArray.remove(at: rocketIndex!)
+                guard let rocketIndex = rocketArray.index(of: nodeB as! SKSpriteNode) else { return }
+                rocketArray.remove(at: rocketIndex)
             } else if nodeA.name == "ufo" {
-                let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode)
-                ufoData.remove(at: ufoIndex!)
-                ufoArray.remove(at: ufoIndex!)
+                guard let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode) else { return }
+                ufoData.remove(at: ufoIndex)
+                ufoArray.remove(at: ufoIndex)
             } else if nodeB.name == "ufo" {
-                let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode)
-                ufoData.remove(at: ufoIndex!)
-                ufoArray.remove(at: ufoIndex!)
+                guard let ufoIndex = ufoArray.index(of: nodeB as! SKSpriteNode) else { return }
+                ufoData.remove(at: ufoIndex)
+                ufoArray.remove(at: ufoIndex)
             }
             
             if nodeA.name != "player" && nodeA.name != "boundary" { nodeA.removeFromParent() }
@@ -600,8 +633,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 healthBar.texture = SKTexture(imageNamed: "laserRed02")
             }
             if healthBar.yScale <= 0 {
-                if nodeA.name == "player" { nodeA.removeFromParent() }
-                else { nodeB.removeFromParent() }
+                if nodeA.name == "player" {
+                    contactA.categoryBitMask = 0
+                    nodeA.run(SKAction.sequence([SKAction(named: "DestroyShip")!, SKAction.removeFromParent()]))
+                } else {
+                    contactB.categoryBitMask = 0
+                    nodeB.run(SKAction.sequence([SKAction(named: "DestroyShip")!, SKAction.removeFromParent()]))
+                }
                 gameState = .gameOver
                 playerScoreUpdate()
                 
