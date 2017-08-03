@@ -110,13 +110,16 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         guard let nodeB = contactB.node else { return }
         
         if nodeA.name == "blast" && nodeB.name == "titleNode" || nodeA.name == "titleNode" && nodeB.name == "blast" {
+            // Title will spin out of control!
             if nodeA.name == "blast" {
+                blast = nodeA as! SKSpriteNode
                 blast.position.y = 0
-                // Title will spin out of control!
                 titleNode = nodeB as! SKSpriteNode
                 titleNode.physicsBody?.angularVelocity = 50
                 titleNode.physicsBody?.velocity = CGVector(dx: 0, dy: -400)
             } else {
+                blast = nodeB as! SKSpriteNode
+                blast.position.y = 0
                 titleNode = nodeA as! SKSpriteNode
                 titleNode.physicsBody?.angularVelocity = 50
                 titleNode.physicsBody?.velocity = CGVector(dx: 0, dy: -400)
