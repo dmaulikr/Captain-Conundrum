@@ -47,6 +47,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var messageTime: CFTimeInterval = 0 // Start message
     var spawnTimer:  CFTimeInterval = 0 // Enemy spawning
     var touchTime:   CFTimeInterval = 0 // Holding down touch
+    var fadeTime:    CFTimeInterval = 0 // Invulnerable to damage
     
     // Other
     var scoreLabel: SKLabelNode!
@@ -60,6 +61,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var ufoArray: [SKSpriteNode] = []
     var ufoData: [(action: Int, originalPosition: CGFloat, timer: CFTimeInterval)] = []
     var isTouching = false
+    var isInvincible = false
     var gameStart = false
     var gameState: GameState = .active
     
@@ -325,6 +327,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         spawnTimer = 0
     }
     
+    func rocketAI() {
+        // Controls the behavior of each rocket
+        for rocket in rocketArray {
+            let thruster = SKEmitterNode(fileNamed: "Fire")!
+            thruster.emissionAngle = 90 // Rocket is facing other way from player
+            thruster.position = CGPoint(x: rocket.position.x, y: rocket.position.y + 50)
+            thruster.zPosition = 1
+            addChild(thruster)
+            // Thrusters will stay for a split second before leaving
+            let wait = SKAction.wait(forDuration: 0.1)
+            let removeParticles = SKAction.removeFromParent()
+            let seq = SKAction.sequence([wait, removeParticles])
+            thruster.run(seq)
+        }
+    }
+    
     func ufoAI() {
         // Controls the behavior of each UFO
         for ufo in ufoArray {
@@ -423,19 +441,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        for rocket in rocketArray {
-            let thruster = SKEmitterNode(fileNamed: "Fire")!
-            thruster.emissionAngle = 90 // Rocket is facing other way from player
-            thruster.position = CGPoint(x: rocket.position.x, y: rocket.position.y + 50)
-            thruster.zPosition = 1
-            addChild(thruster)
-            // Thrusters will stay for a split second before leaving
-            let wait = SKAction.wait(forDuration: 0.1)
-            let removeParticles = SKAction.removeFromParent()
-            let seq = SKAction.sequence([wait, removeParticles])
-            thruster.run(seq)
+        if isInvincible {
+            fadeTime += fixedDelta
+            player.physicsBody?.contactTestBitMask = 0
+            
+            if fadeTime >= 2 {
+                player.physicsBody?.contactTestBitMask = 504
+                fadeTime = 0
+                isInvincible = false
+            }
         }
         
+        rocketAI()
         ufoAI()
     }
     
@@ -459,7 +476,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func didBegin(_ contact: SKPhysicsContact) {
         // Called when two bodies make contact
-        if gameState != .active { return } // Once hit, the enemy can't be hit mid-explosion
+        if gameState != .active { return }
         
         let contactA = contact.bodyA
         let contactB = contact.bodyB
@@ -624,14 +641,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ufoArray.remove(at: ufoIndex)
             }
             
-            if nodeA.name != "player" && nodeA.name != "boundary" { nodeA.removeFromParent() }
-            else if nodeB.name != "player" && nodeB.name != "boundary" { nodeB.removeFromParent() }
+            // Player invincibility period
+            if nodeA.name == "player" {
+                nodeA.run(SKAction(named: "Invincibility")!)
+                contactB.categoryBitMask = 0
+                nodeB.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+            } else {
+                nodeB.run(SKAction(named: "Invincibility")!)
+                contactA.categoryBitMask = 0
+                nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+            }
             
+            isInvincible = true
             healthBar.yScale -= 0.25
+            
             // When the player is low on health, the health bar turns red
             if healthBar.yScale <= 1.25 {
                 healthBar.texture = SKTexture(imageNamed: "laserRed02")
             }
+            
             if healthBar.yScale <= 0 {
                 if nodeA.name == "player" {
                     contactA.categoryBitMask = 0
