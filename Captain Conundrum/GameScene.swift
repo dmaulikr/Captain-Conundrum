@@ -21,6 +21,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var satellite: SKSpriteNode!
     var rocket: SKSpriteNode!
     var ufo: SKSpriteNode!
+    let thrusters = SKEmitterNode(fileNamed: "Fire")!
     
     // Buttons
     var buttonPause: MSButtonNode!
@@ -242,6 +243,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
         motionManager = CMMotionManager()
         motionManager.startAccelerometerUpdates()
+        thrusters.position.y = player.position.y - 45
+        addChild(thrusters)
     }
     
     func shoot() {
@@ -333,7 +336,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let thruster = SKEmitterNode(fileNamed: "Fire")!
             thruster.emissionAngle = 90 // Rocket is facing other way from player
             thruster.position = CGPoint(x: rocket.position.x, y: rocket.position.y + 50)
-            thruster.zPosition = 1
             addChild(thruster)
             // Thrusters will stay for a split second before leaving
             let wait = SKAction.wait(forDuration: 0.1)
@@ -406,6 +408,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return // Accelerometer isn't ready until the next frame
         }
         player.position.x += CGFloat(Double(motion.acceleration.x) * 15)
+        thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45) // Fire moves alongside player
         
         scrollWorld()
         spawnEnemy()
@@ -668,6 +671,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     contactB.categoryBitMask = 0
                     nodeB.run(SKAction.sequence([SKAction(named: "DestroyShip")!, SKAction.removeFromParent()]))
                 }
+                
+                thrusters.removeFromParent()
                 gameState = .gameOver
                 playerScoreUpdate()
                 
