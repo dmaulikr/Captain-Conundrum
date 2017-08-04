@@ -17,8 +17,10 @@ class Options: SKScene {
     var buttonBack: MSButtonNode!
     var musicToggle: MSButtonNode!
     var messageTime: CFTimeInterval = 0
-    var fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
+    let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     var comingSoon: SKLabelNode! // Placeholder until features are implemented
+    let soundSelect = SKAction.playSoundFileNamed("click1.caf", waitForCompletion: false)
+    let soundExit = SKAction.playSoundFileNamed("switch34.caf", waitForCompletion: false)
     
     override func didMove(to view: SKView) {
         buttonControls = childNode(withName: "buttonControls") as! MSButtonNode
@@ -31,30 +33,37 @@ class Options: SKScene {
         comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
         
         buttonControls.selectedHandler = { [unowned self] in
+            self.run(self.soundSelect)
             self.comingSoon.isHidden = false
         }
         
         buttonCredits.selectedHandler = { [unowned self] in
+            self.run(self.soundSelect)
             self.comingSoon.isHidden = false
         }
         
         buttonCustomize.selectedHandler = { [unowned self] in
+            self.run(self.soundSelect)
             self.comingSoon.isHidden = false
         }
         
         leaderboards.selectedHandler = { [unowned self] in
+            self.run(self.soundSelect)
             self.comingSoon.isHidden = false
         }
         
         achievements.selectedHandler = { [unowned self] in
+            self.run(self.soundSelect)
             self.comingSoon.isHidden = false
         }
         
         buttonBack.selectedHandler = { [unowned self] in
+            self.run(self.soundExit)
             self.loadMainMenu()
         }
         
         musicToggle.selectedHandler = { [unowned self] in
+            self.run(self.soundSelect)
             self.comingSoon.isHidden = false
         }
     }

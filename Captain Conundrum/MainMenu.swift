@@ -17,6 +17,9 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
     var scrollLayer: SKNode!
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     let scrollSpeed: CGFloat = 100
+    let soundSelect = SKAction.playSoundFileNamed("click1.caf", waitForCompletion: false)
+    let soundAttack = SKAction.playSoundFileNamed("laser5.caf", waitForCompletion: false)
+    let soundExplosion = SKAction.playSoundFileNamed("cc0_explosion_large_gun_powder.caf", waitForCompletion: false)
     
     override func didMove(to view: SKView) {
         player = childNode(withName: "player") as! MSButtonNode
@@ -27,6 +30,7 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         scrollLayer = childNode(withName: "scrollLayer")
         
         player.selectedHandler = { [unowned self] in // Prevents memory leaks from MSButtonNode
+            self.run(self.soundAttack)
             self.blast.physicsBody?.velocity = CGVector(dx: 0, dy: 500) // Secret button!
             
             if self.blast.position.y >= 325 {
@@ -35,10 +39,12 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         }
         
         buttonStart.selectedHandler = { [unowned self] in
+            self.run(self.soundSelect)
             self.loadGame()
         }
         
         buttonOptions.selectedHandler = { [unowned self] in
+            self.run(self.soundSelect)
             self.loadOptions()
         }
         
@@ -111,6 +117,7 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         
         if nodeA.name == "blast" && nodeB.name == "title" || nodeA.name == "title" && nodeB.name == "blast" {
             // Title will spin out of control!
+            run(soundExplosion)
             if nodeA.name == "blast" {
                 blast = nodeA as! SKSpriteNode
                 blast.position.y = 0
