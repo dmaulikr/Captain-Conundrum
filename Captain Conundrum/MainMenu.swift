@@ -11,7 +11,7 @@ import SpriteKit
 class MainMenu: SKScene, SKPhysicsContactDelegate {
     var player: MSButtonNode!
     var blast: SKSpriteNode!
-    var titleNode: SKSpriteNode!
+    var title: SKSpriteNode!
     var buttonStart: MSButtonNode!
     var buttonOptions: MSButtonNode!
     var scrollLayer: SKNode!
@@ -21,7 +21,7 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         player = childNode(withName: "player") as! MSButtonNode
         blast = childNode(withName: "blast") as! SKSpriteNode
-        titleNode = childNode(withName: "titleNode") as! SKSpriteNode
+        title = childNode(withName: "title") as! SKSpriteNode
         buttonStart = childNode(withName: "buttonStart") as! MSButtonNode
         buttonOptions = childNode(withName: "buttonOptions") as! MSButtonNode
         scrollLayer = childNode(withName: "scrollLayer")
@@ -96,8 +96,8 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
                 star.position = self.convert(newPosition, to: scrollLayer)
             }
             
-            if titleNode.position.y <= -310 {
-                titleNode.removeFromParent()
+            if title.position.y <= -310 {
+                title.removeFromParent()
             }
         }
     }
@@ -109,20 +109,20 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         guard let nodeA = contactA.node else { return }
         guard let nodeB = contactB.node else { return }
         
-        if nodeA.name == "blast" && nodeB.name == "titleNode" || nodeA.name == "titleNode" && nodeB.name == "blast" {
+        if nodeA.name == "blast" && nodeB.name == "title" || nodeA.name == "title" && nodeB.name == "blast" {
             // Title will spin out of control!
             if nodeA.name == "blast" {
                 blast = nodeA as! SKSpriteNode
                 blast.position.y = 0
-                titleNode = nodeB as! SKSpriteNode
-                titleNode.physicsBody?.angularVelocity = 50
-                titleNode.physicsBody?.velocity = CGVector(dx: 0, dy: -400)
+                title = nodeB as! SKSpriteNode
+                title.physicsBody?.angularVelocity = 50
+                title.physicsBody?.velocity = CGVector(dx: 0, dy: -400)
             } else {
                 blast = nodeB as! SKSpriteNode
                 blast.position.y = 0
-                titleNode = nodeA as! SKSpriteNode
-                titleNode.physicsBody?.angularVelocity = 50
-                titleNode.physicsBody?.velocity = CGVector(dx: 0, dy: -400)
+                title = nodeA as! SKSpriteNode
+                title.physicsBody?.angularVelocity = 50
+                title.physicsBody?.velocity = CGVector(dx: 0, dy: -400)
             }
         }
     }

@@ -139,9 +139,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     } ()
     
     var hitsMessage: SKLabelNode = {
-        let label = SKLabelNode(fontNamed: "Britannic Bold")
+        let label = SKLabelNode(fontNamed: "Brtiannic Bold")
         label.fontSize = 36
-        label.fontColor = .green
+        label.fontColor = .cyan
         label.position = CGPoint(x: 0, y: -130)
         label.zPosition = 2
         return label
@@ -150,7 +150,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var missMessage: SKLabelNode = {
         let label = SKLabelNode(fontNamed: "Britannic Bold")
         label.fontSize = 36
-        label.fontColor = .red
+        label.fontColor = .cyan
         label.position = CGPoint(x: 0, y: -180)
         label.zPosition = 2
         return label
@@ -159,7 +159,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var ratioMessage: SKLabelNode = {
         let label = SKLabelNode(fontNamed: "Britannic Bold")
         label.fontSize = 32
-        label.fontColor = .yellow
+        label.fontColor = .cyan
         label.position = CGPoint(x: 0, y: -230)
         label.zPosition = 2
         return label
