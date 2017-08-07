@@ -15,7 +15,8 @@ class Options: SKScene {
     var leaderboards: MSButtonNode!
     var achievements: MSButtonNode!
     var buttonBack: MSButtonNode!
-    var musicToggle: MSButtonNode!
+    var musicOn: MSButtonNode!
+    var musicOff: MSButtonNode!
     var messageTime: CFTimeInterval = 0
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     var comingSoon: SKLabelNode! // Placeholder until features are implemented
@@ -29,7 +30,8 @@ class Options: SKScene {
         leaderboards = childNode(withName: "leaderboards") as! MSButtonNode
         achievements = childNode(withName: "achievements") as! MSButtonNode
         buttonBack = childNode(withName: "buttonBack") as! MSButtonNode
-        musicToggle = childNode(withName: "musicToggle") as! MSButtonNode
+        musicOn = childNode(withName: "musicOn") as! MSButtonNode
+        musicOff = childNode(withName: "musicOff") as! MSButtonNode
         comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
         
         buttonControls.selectedHandler = { [unowned self] in
@@ -62,9 +64,15 @@ class Options: SKScene {
             self.loadMainMenu()
         }
         
-        musicToggle.selectedHandler = { [unowned self] in
+        musicOn.selectedHandler = { [unowned self] in
             self.run(self.soundSelect)
-            self.comingSoon.isHidden = false
+            GameViewController.backgroundMusic.stop()
+            self.musicOff.isHidden = false
+        }
+        
+        musicOff.selectedHandler = { [unowned self] in
+            GameViewController.backgroundMusic.play()
+            self.musicOn.isHidden = false
         }
     }
     
@@ -87,6 +95,12 @@ class Options: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
+        if GameViewController.backgroundMusic.isPlaying {
+            musicOff.isHidden = true
+        } else {
+            musicOn.isHidden = true
+        }
+        
         if comingSoon.isHidden == false {
             messageTime += fixedDelta
         }

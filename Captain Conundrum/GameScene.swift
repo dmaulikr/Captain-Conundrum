@@ -231,7 +231,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         buttonRetry.selectedHandler = { [unowned self] in
             self.run(self.soundSelect)
-            self.boxGameOver.position.x = -286
+            self.boxGameOver.position.x = -320
             
             guard let skView = self.view as SKView! else {
                 print("Could not get SKview")
