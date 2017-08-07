@@ -198,17 +198,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
         healthBar = childNode(withName: "healthBar") as! SKSpriteNode
         
-        for (key: _, value: (file: file, track: track)) in soundEffects {
+        for (key: sound, value: (file: file, track: _)) in soundEffects {
             // Get sound effects ready
             let soundFilePath = Bundle.main.path(forResource: file, ofType: "caf")!
             let soundFileURL = URL(fileURLWithPath: soundFilePath)
             
             do {
                 let player = try AVAudioPlayer(contentsOf: soundFileURL)
-                var track = track // Causes parameter values to be mutable
-                track = player
-                track?.numberOfLoops = 0 // No loop
-                track?.prepareToPlay()
+                soundEffects[sound]?.track = player
+                let track = soundEffects[sound]?.track ?? player // Causes parameter to be mutable
+                track.numberOfLoops = 0 // No loop
+                track.prepareToPlay()
             } catch {
                 print("Music can't be played.")
             }
