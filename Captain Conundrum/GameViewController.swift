@@ -32,7 +32,7 @@ class GameViewController: UIViewController {
             view.showsFPS = true
             view.showsNodeCount = true
             
-            // Plays music in the background
+            // Play music in the background
             let soundFilePath = Bundle.main.path(forResource: "techological", ofType: "caf")!
             let soundFileURL = URL(fileURLWithPath: soundFilePath)
             

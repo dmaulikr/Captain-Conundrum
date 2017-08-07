@@ -8,6 +8,7 @@
 
 import SpriteKit
 import CoreMotion
+import AVFoundation
 
 enum GameState {
     case active, paused, gameOver
@@ -51,12 +52,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var fadeTime:    CFTimeInterval = 0 // Invulnerable to damage
     
     // Music
-    let soundSelect = SKAction.playSoundFileNamed("click1.caf", waitForCompletion: false)
-    let soundAttack = SKAction.playSoundFileNamed("laser5.caf", waitForCompletion: false)
-    let soundEnemyAttack = SKAction.playSoundFileNamed("laser7.caf", waitForCompletion: false)
-    let soundExplosion = SKAction.playSoundFileNamed("cc0_explosion_large_gun_powder.caf", waitForCompletion: false)
-    let soundIncoming = SKAction.playSoundFileNamed("highDown.caf", waitForCompletion: false)
-    let soundExit = SKAction.playSoundFileNamed("switch34.caf", waitForCompletion: false)
+    var soundEffects: [String: (file: String, track: AVAudioPlayer?)] = [
+        // Stores all music tracks
+        "select": ("click1", nil),
+        "incoming": ("highDown", nil),
+        "exit": ("switch34", nil),
+        "attack": ("laser5", nil),
+        "enemy attack": ("laser7", nil),
+        "explosion": ("cc0_explosion_large_gun_powder", nil)
+    ]
     
     // Other
     var scoreLabel: SKLabelNode!
@@ -194,8 +198,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
         healthBar = childNode(withName: "healthBar") as! SKSpriteNode
         
+        for (key: _, value: (file: file, track: track)) in soundEffects {
+            // Get sound effects ready
+            let soundFilePath = Bundle.main.path(forResource: file, ofType: "caf")!
+            let soundFileURL = URL(fileURLWithPath: soundFilePath)
+            
+            do {
+                let player = try AVAudioPlayer(contentsOf: soundFileURL)
+                var track = track // Causes parameter values to be mutable
+                track = player
+                track?.numberOfLoops = 0 // No loop
+                track?.prepareToPlay()
+            } catch {
+                print("Music can't be played.")
+            }
+        }
+        
         buttonPause.selectedHandler = { [unowned self] in
-            self.run(self.soundSelect)
+            self.soundEffects["select"]?.track?.play()
             if self.gameState == .gameOver { return }
             self.gameState = .paused
             self.boxPause.isHidden = false
@@ -203,14 +223,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         buttonContinue.selectedHandler = { [unowned self] in
-            self.run(self.soundSelect)
+            self.soundEffects["select"]?.track?.play()
             self.gameState = .active
             self.boxPause.isHidden = true
             self.isPaused = false
         }
         
         buttonQuit.selectedHandler = { [unowned self] in
-            self.run(self.soundExit)
+            self.soundEffects["exit"]?.track?.play()
             guard let skView = self.view as SKView! else {
                 print("Cound not get SKview")
                 return
@@ -230,7 +250,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         buttonRetry.selectedHandler = { [unowned self] in
-            self.run(self.soundSelect)
+            self.soundEffects["select"]?.track?.play()
             self.boxGameOver.position.x = -320
             
             guard let skView = self.view as SKView! else {
@@ -263,7 +283,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if numberOfBlasts >= 3 { return } // Only 3 lasers allowed on screen at once
         // Copies allow for multiple attacks on screen
         let multiAttack = attack.copy() as! SKSpriteNode
-        run(soundAttack)
+        soundEffects["attack"]?.track?.play()
         addChild(multiAttack)
         multiAttack.position = player.position
         multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: 500)
@@ -313,7 +333,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let enemy = arc4random_uniform(4) // 4 enemies to choose from
         let enemyPosition = CGPoint(x: CGFloat.random(min: -117, max: 117), y: 305)
-        run(soundIncoming)
+        soundEffects["incoming"]?.track?.play()
         
         switch enemy {
             case 0:
@@ -369,7 +389,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Every 2 seconds, the UFO fires
             if ufoData[index].timer >= 2 {
                 let multiAttack = ufoAttack.copy() as! SKSpriteNode
-                run(soundEnemyAttack)
+                soundEffects["enemy attack"]?.track?.play()
                 addChild(multiAttack)
                 multiAttack.position = ufo.position
                 multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: -250)
@@ -504,7 +524,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Player is doing damage
         if nodeA.name == "attack" && nodeB.name == "initialMeteor" || nodeA.name == "initialMeteor" && nodeB.name == "attack" {
-            run(soundAttack)
+            soundEffects["explosion"]?.track?.play()
             if nodeA.name == "initialMeteor" {
                 contactA.categoryBitMask = 0 // Once hit, the enemy can't be hit mid-explosion
                 nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
@@ -528,7 +548,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "meteor" || nodeA.name == "meteor" && nodeB.name == "attack" {
-            run(soundExplosion)
+            soundEffects["explosion"]?.track?.play()
             if nodeA.name == "meteor" {
                 contactA.categoryBitMask = 0
                 nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
@@ -545,7 +565,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "satellite" || nodeA.name == "satellite" && nodeB.name == "attack" {
-            run(soundExplosion)
+            soundEffects["explosion"]?.track?.play()
             if nodeA.name == "satellite" {
                 contactA.categoryBitMask = 0
                 nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
@@ -562,7 +582,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "rocket" || nodeA.name == "rocket" && nodeB.name == "attack" {
-            run(soundExplosion)
+            soundEffects["explosion"]?.track?.play()
             if nodeA.name == "rocket" {
                 contactA.categoryBitMask = 0
                 guard let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode) else { return }
@@ -583,7 +603,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "ufo" || nodeA.name == "ufo" && nodeB.name == "attack" {
-            run(soundExplosion)
+            soundEffects["explosion"]?.track?.play()
             if nodeA.name == "ufo" {
                 contactA.categoryBitMask = 0
                 guard let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode) else { return }
@@ -648,7 +668,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Player is taking damage (except with the boundaries)
         if nodeA.name == "player" && (nodeB.name != "boundary" && nodeB.name != "boundarySide") || (nodeA.name != "boundary" && nodeA.name != "boundarySide") && nodeB.name == "player" {
-            run(soundExplosion)
+            soundEffects["explosion"]?.track?.play()
             if nodeA.name == "rocket" {
                 guard let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode) else { return }
                 rocketArray.remove(at: rocketIndex)

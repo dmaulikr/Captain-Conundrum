@@ -7,6 +7,7 @@
 //
 
 import SpriteKit
+import AVFoundation
 
 class Options: SKScene {
     var buttonControls: MSButtonNode!
@@ -20,8 +21,7 @@ class Options: SKScene {
     var messageTime: CFTimeInterval = 0
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     var comingSoon: SKLabelNode! // Placeholder until features are implemented
-    let soundSelect = SKAction.playSoundFileNamed("click1.caf", waitForCompletion: false)
-    let soundExit = SKAction.playSoundFileNamed("switch34.caf", waitForCompletion: false)
+    var music: AVAudioPlayer!
     
     override func didMove(to view: SKView) {
         buttonControls = childNode(withName: "buttonControls") as! MSButtonNode
@@ -35,37 +35,37 @@ class Options: SKScene {
         comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
         
         buttonControls.selectedHandler = { [unowned self] in
-            self.run(self.soundSelect)
+            self.playSFX(file: "click1")
             self.comingSoon.isHidden = false
         }
         
         buttonCredits.selectedHandler = { [unowned self] in
-            self.run(self.soundSelect)
+            self.playSFX(file: "click1")
             self.comingSoon.isHidden = false
         }
         
         buttonCustomize.selectedHandler = { [unowned self] in
-            self.run(self.soundSelect)
+            self.playSFX(file: "click1")
             self.comingSoon.isHidden = false
         }
         
         leaderboards.selectedHandler = { [unowned self] in
-            self.run(self.soundSelect)
+            self.playSFX(file: "click1")
             self.comingSoon.isHidden = false
         }
         
         achievements.selectedHandler = { [unowned self] in
-            self.run(self.soundSelect)
+            self.playSFX(file: "click1")
             self.comingSoon.isHidden = false
         }
         
         buttonBack.selectedHandler = { [unowned self] in
-            self.run(self.soundExit)
+            self.playSFX(file: "switch34")
             self.loadMainMenu()
         }
         
         musicOn.selectedHandler = { [unowned self] in
-            self.run(self.soundSelect)
+            self.playSFX(file: "click1")
             GameViewController.backgroundMusic.stop()
             self.musicOff.isHidden = false
         }
@@ -73,6 +73,22 @@ class Options: SKScene {
         musicOff.selectedHandler = { [unowned self] in
             GameViewController.backgroundMusic.play()
             self.musicOn.isHidden = false
+        }
+    }
+    
+    func playSFX(file: String) {
+        // Get sound effects ready
+        let soundFilePath = Bundle.main.path(forResource: file, ofType: "caf")!
+        let soundFileURL = URL(fileURLWithPath: soundFilePath)
+        
+        do {
+            let player = try AVAudioPlayer(contentsOf: soundFileURL)
+            music = player
+            music.numberOfLoops = 0 // No loop
+            music.prepareToPlay()
+            music.play()
+        } catch {
+            print("Music can't be played.")
         }
     }
     
