@@ -26,6 +26,9 @@ class Options: SKScene {
         "exit": ("switch34", nil)
     ]
     
+    var screenCredits: SKSpriteNode!
+    var exitCredits: MSButtonNode!
+    
     override func didMove(to view: SKView) {
         buttonControls = childNode(withName: "buttonControls") as! MSButtonNode
         buttonCredits = childNode(withName: "buttonCredits") as! MSButtonNode
@@ -36,6 +39,8 @@ class Options: SKScene {
         musicOn = childNode(withName: "musicOn") as! MSButtonNode
         musicOff = childNode(withName: "musicOff") as! MSButtonNode
         comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
+        screenCredits = childNode(withName: "screenCredits") as! SKSpriteNode
+        exitCredits = screenCredits.childNode(withName: "exitCredits") as! MSButtonNode
         
         for (key: sound, value: (file: file, track: _)) in soundEffects {
             // Get sound effects ready
@@ -60,7 +65,13 @@ class Options: SKScene {
         buttonCredits.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundEffects["select"]?.track?.play()
-            self.comingSoon.isHidden = false
+            self.screenCredits.position.x = 0
+        }
+        
+        exitCredits.selectedHandler = { [unowned self] in
+            self.soundEffects["exit"]?.track?.prepareToPlay()
+            self.soundEffects["exit"]?.track?.play()
+            self.screenCredits.position.x = -350
         }
         
         buttonCustomize.selectedHandler = { [unowned self] in
