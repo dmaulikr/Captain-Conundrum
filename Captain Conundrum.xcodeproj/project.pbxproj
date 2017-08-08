@@ -14,6 +14,7 @@
 		250EF1641F34E1A90042D674 /* switch34.caf in Resources */ = {isa = PBXBuildFile; fileRef = 250EF1601F34E1A90042D674 /* switch34.caf */; };
 		250EF16A1F34E7CF0042D674 /* techological.caf in Resources */ = {isa = PBXBuildFile; fileRef = 250EF1691F34E7CF0042D674 /* techological.caf */; };
 		250EF16C1F34EBB90042D674 /* laser7.caf in Resources */ = {isa = PBXBuildFile; fileRef = 250EF16B1F34EBB90042D674 /* laser7.caf */; };
+		251363E51F3A2AED00963B60 /* powerUp12.caf in Resources */ = {isa = PBXBuildFile; fileRef = 251363E41F3A2AED00963B60 /* powerUp12.caf */; };
 		2513E3421F39454C009EE04B /* laser5_trimmed.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2513E3411F39454C009EE04B /* laser5_trimmed.caf */; };
 		2513E3441F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2513E3431F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf */; };
 		25192DE81F262E4800722D8F /* digital-sfx-set in Resources */ = {isa = PBXBuildFile; fileRef = 25192DE71F262E4800722D8F /* digital-sfx-set */; };
@@ -42,6 +43,7 @@
 		250EF1601F34E1A90042D674 /* switch34.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = switch34.caf; path = ../switch34.caf; sourceTree = "<group>"; };
 		250EF1691F34E7CF0042D674 /* techological.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = techological.caf; sourceTree = "<group>"; };
 		250EF16B1F34EBB90042D674 /* laser7.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = laser7.caf; sourceTree = "<group>"; };
+		251363E41F3A2AED00963B60 /* powerUp12.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = powerUp12.caf; sourceTree = "<group>"; };
 		2513E3411F39454C009EE04B /* laser5_trimmed.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = laser5_trimmed.caf; sourceTree = "<group>"; };
 		2513E3431F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = cc0_explosion_large_gun_powder_trimmed.caf; sourceTree = "<group>"; };
 		25192DE71F262E4800722D8F /* digital-sfx-set */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "digital-sfx-set"; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 				250EF16B1F34EBB90042D674 /* laser7.caf */,
 				2513E3431F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf */,
 				250EF1691F34E7CF0042D674 /* techological.caf */,
+				251363E41F3A2AED00963B60 /* powerUp12.caf */,
 			);
 			name = SFX;
 			path = "Captain Conundrum";
@@ -203,6 +206,7 @@
 				250EF1641F34E1A90042D674 /* switch34.caf in Resources */,
 				254CF41B1F26262F008711BC /* GameScene.sks in Resources */,
 				250EF16A1F34E7CF0042D674 /* techological.caf in Resources */,
+				251363E51F3A2AED00963B60 /* powerUp12.caf in Resources */,
 				250EF15B1F34C8D20042D674 /* jinglesounds-kenney in Resources */,
 				25192DE81F262E4800722D8F /* digital-sfx-set in Resources */,
 				254CF4261F26262F008711BC /* Assets.xcassets in Resources */,

@@ -714,14 +714,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             isInvincible = true
-            healthBar.yScale -= 0.25
+            healthBar.xScale -= 0.22
             
             // When the player is low on health, the health bar turns red
-            if healthBar.yScale <= 1.25 {
-                healthBar.texture = SKTexture(imageNamed: "laserRed02")
+            if healthBar.xScale <= 1.1 {
+                healthBar.texture = SKTexture(imageNamed: "red_button11")
             }
             
-            if healthBar.yScale <= 0 {
+            if healthBar.xScale <= 0 {
                 if nodeA.name == "player" {
                     contactA.categoryBitMask = 0
                     nodeA.run(SKAction.sequence([SKAction(named: "DestroyShip")!, SKAction.removeFromParent()]))
