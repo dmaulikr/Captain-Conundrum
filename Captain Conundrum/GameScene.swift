@@ -24,6 +24,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var ufo: SKSpriteNode!
     let thrusters = SKEmitterNode(fileNamed: "Fire")!
     
+    // Power ups
+    var powerupHealth: SKSpriteNode!
+    var powerupRapidFire: SKSpriteNode!
+    var powerupSpread: SKSpriteNode!
+    var powerupInvincible: SKSpriteNode!
+    
     // Buttons
     var buttonPause: MSButtonNode!
     var boxPause: SKNode!
@@ -42,14 +48,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         "meteor": -100,
         "satelliteX": -200, "satelliteY": -200,
         "rocket": -300,
-        "ufo+": 150, "ufo-": -150
+        "ufo+": 150, "ufo-": -150,
+        "powerUp": -400
     ]
     
     // Timers (in seconds)
-    var messageTime: CFTimeInterval = 0 // Start message
-    var spawnTimer:  CFTimeInterval = 0 // Enemy spawning
-    var touchTime:   CFTimeInterval = 0 // Holding down touch
-    var fadeTime:    CFTimeInterval = 0 // Invulnerable to damage
+    var messageTime:      CFTimeInterval = 0 // Start message
+    var enemySpawnTimer:  CFTimeInterval = 0 // Enemy spawning
+    var powerSpawnTimer:  CFTimeInterval = 0 // Power up spawning
+    var touchTime:        CFTimeInterval = 0 // Holding down touch
+    var fadeTime:         CFTimeInterval = 0 // Invulnerable to damage
+    var powerTime:        CFTimeInterval = 0 // Power up active
     
     // Music
     var soundEffects: [String: (file: String, track: AVAudioPlayer?)] = [
@@ -59,7 +68,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         "exit": ("switch34", nil),
         "attack": ("laser5_trimmed", nil),
         "enemy attack": ("laser7", nil),
-        "explosion": ("cc0_explosion_large_gun_powder_trimmed", nil)
+        "explosion": ("cc0_explosion_large_gun_powder_trimmed", nil),
+        "power up": ("powerUp12", nil)
     ]
     
     // Other
@@ -93,7 +103,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         blast.physicsBody?.affectedByGravity = false
         blast.physicsBody?.categoryBitMask = 4
         blast.physicsBody?.collisionBitMask = 4
-        blast.physicsBody?.contactTestBitMask = 122 // In contact with all enemies and boundaries
+        blast.physicsBody?.contactTestBitMask = 634 // In contact with all enemies and boundaries (including power ups)
         return blast
     } ()
     
@@ -185,6 +195,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         satellite = childNode(withName: "satellite") as! SKSpriteNode
         rocket = childNode(withName: "rocket") as! SKSpriteNode
         ufo = childNode(withName: "ufo") as! SKSpriteNode
+        
+        powerupHealth = childNode(withName: "powerupHealth") as! SKSpriteNode
+        powerupRapidFire = childNode(withName: "powerupRapidFire") as! SKSpriteNode
+        powerupSpread = childNode(withName: "powerupSpread") as! SKSpriteNode
+        powerupInvincible = childNode(withName: "powerupInvincible") as! SKSpriteNode
         
         buttonPause = childNode(withName: "buttonPause") as! MSButtonNode
         boxPause = childNode(withName: "boxPause")
@@ -332,7 +347,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func spawnEnemy() {
         // Randomly spawns an enemy falling from the top every second
-        if spawnTimer < 1 { return }
+        if enemySpawnTimer < 1 { return }
         
         let enemy = arc4random_uniform(4) // 4 enemies to choose from
         let enemyPosition = CGPoint(x: CGFloat.random(min: -117, max: 117), y: 305)
@@ -365,7 +380,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ufoData.append((0, 0, 0))  // UFO behavior
         }
         
-        spawnTimer = 0
+        enemySpawnTimer = 0
+    }
+    
+    func spawnPowerUp() {
+        // Randomly spawns a power up from the top every 20 seconds
+        if powerSpawnTimer < 20 { return }
+        
+        let powerUp = arc4random_uniform(4) // 4 power ups to choose from
+        let powerUpPosition = CGPoint(x: CGFloat.random(min: -117, max: 117), y: 305)
+        soundEffects["incoming"]?.track?.prepareToPlay()
+        soundEffects["incoming"]?.track?.play()
+        
+        switch powerUp {
+            case 0:
+                let newHealth = powerupHealth.copy() as! SKSpriteNode
+                newHealth.position = powerUpPosition
+                newHealth.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["powerUp"]!) // Fall down very quickly
+                addChild(newHealth)
+            case 1:
+                let newFire = powerupRapidFire.copy() as! SKSpriteNode
+                newFire.position = powerUpPosition
+                newFire.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["powerUp"]!)
+                addChild(newFire)
+            case 2:
+                let newSpread = powerupSpread.copy() as! SKSpriteNode
+                newSpread.position = powerUpPosition
+                newSpread.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["powerUp"]!)
+                addChild(newSpread)
+            default:
+                let newInvincible = powerupInvincible.copy() as! SKSpriteNode
+                newInvincible.position = powerUpPosition
+                newInvincible.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["powerUp"]!)
+                addChild(newInvincible)
+        }
+        
+        powerSpawnTimer = 0
     }
     
     func rocketAI() {
@@ -452,6 +502,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         scrollWorld()
         spawnEnemy()
+        spawnPowerUp()
         
         if messageTime > 0 { // Can hit more meteors without affecting start timer
             messageTime += fixedDelta
@@ -464,7 +515,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if gameStart {
-            spawnTimer += fixedDelta
+            enemySpawnTimer += fixedDelta
+            powerSpawnTimer += fixedDelta
+            
             for (enemy, speed) in enemySpeed {
                 // Overtime, enemies speed up to increase difficulty
                 if speed > 0 {
@@ -489,7 +542,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             player.physicsBody?.contactTestBitMask = 0
             
             if fadeTime >= 2 {
-                player.physicsBody?.contactTestBitMask = 504
+                player.physicsBody?.contactTestBitMask = 1016 // Update whenever physics masks are modified
                 fadeTime = 0
                 isInvincible = false
             }
@@ -532,6 +585,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
             soundEffects["explosion"]?.track?.volume = 0.5
+            
             if nodeA.name == "initialMeteor" {
                 contactA.categoryBitMask = 0 // Once hit, the enemy can't be hit mid-explosion
                 nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
@@ -549,7 +603,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 addChild(startMessage) // Player has completed tutorial section
                 scoreLabel.isHidden = false
                 messageTime += fixedDelta
-                spawnTimer += fixedDelta
                 gameStart = true
             }
         }
@@ -558,6 +611,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
             soundEffects["explosion"]?.track?.volume = 0.5
+            
             if nodeA.name == "meteor" {
                 contactA.categoryBitMask = 0
                 nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
@@ -577,6 +631,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
             soundEffects["explosion"]?.track?.volume = 0.5
+            
             if nodeA.name == "satellite" {
                 contactA.categoryBitMask = 0
                 nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
@@ -596,6 +651,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
             soundEffects["explosion"]?.track?.volume = 0.5
+            
             if nodeA.name == "rocket" {
                 contactA.categoryBitMask = 0
                 guard let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode) else { return }
@@ -619,6 +675,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
             soundEffects["explosion"]?.track?.volume = 0.5
+            
             if nodeA.name == "ufo" {
                 contactA.categoryBitMask = 0
                 guard let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode) else { return }
@@ -640,6 +697,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             score += 20
         }
         
+        // Don't shoot the power ups!
+        if nodeA.name == "attack" && (nodeB.name == "powerupHealth" || nodeB.name == "powerupRapidFire" || nodeB.name == "powerupSpread" || nodeB.name == "powerupInvincible") ||
+            (nodeA.name == "powerupHealth" || nodeA.name == "powerupRapidFire" || nodeA.name == "powerupSpread" || nodeA.name == "powerupInvincible") && nodeB.name == "attack" {
+            soundEffects["explosion"]?.track?.prepareToPlay()
+            soundEffects["explosion"]?.track?.play()
+            soundEffects["explosion"]?.track?.volume = 0.5
+            
+            if nodeB.name == "attack" {
+                contactA.categoryBitMask = 0
+                nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeB.removeFromParent()
+            } else {
+                contactB.categoryBitMask = 0
+                nodeB.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
+                nodeA.removeFromParent()
+            }
+            
+            numberOfBlasts -= 1
+            hits += 1
+        }
+        
         // Satellite hits the side
         if nodeA.name == "satellite" && nodeB.name == "boundarySide" || nodeA.name == "boundarySide" && nodeB.name == "satellite" {
             enemySpeed["satelliteX"] = -enemySpeed["satelliteX"]!
@@ -659,7 +737,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // Enemies are going offscreen
-        if nodeA.name == "meteor" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "meteor" || nodeA.name == "satellite" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "satellite" || nodeA.name == "rocket" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "rocket" || nodeA.name == "ufo" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "ufo" {
+        if (nodeA.name == "meteor" || nodeA.name == "satellite" || nodeA.name == "rocket" || nodeA.name == "ufo" || nodeA.name == "powerupHealth" || nodeA.name == "powerupRapidFire" || nodeA.name == "powerupSpread" || nodeA.name == "powerupInvincible") && nodeB.name == "boundary" ||
+            nodeA.name == "boundary" && (nodeB.name == "meteor" || nodeB.name == "satellite" || nodeB.name == "rocket" || nodeB.name == "ufo" || nodeB.name == "powerupHealth" || nodeB.name == "powerupRapidFire" || nodeB.name == "powerupSpread" || nodeB.name == "powerupInvincible") {
             if nodeA.name == "rocket" {
                 guard let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode) else { return }
                 rocketArray.remove(at: rocketIndex)
@@ -681,11 +760,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             score -= 1 // Player is punished for not shooting enemies
         }
         
-        // Player is taking damage (except with the boundaries)
-        if nodeA.name == "player" && (nodeB.name != "boundary" && nodeB.name != "boundarySide") || (nodeA.name != "boundary" && nodeA.name != "boundarySide") && nodeB.name == "player" {
+        // Player has powered up
+        if nodeA.name == "player" && (nodeB.name == "powerupHealth" || nodeB.name == "powerupRapidFire" || nodeB.name == "powerupSpread" || nodeB.name == "powerupInvincible") ||
+            (nodeA.name == "powerupHealth" || nodeA.name == "powerupRapidFire" || nodeA.name == "powerupSpread" || nodeA.name == "powerupInvincible") && nodeB.name == "player" {
+            soundEffects["power up"]?.track?.prepareToPlay()
+            soundEffects["power up"]?.track?.play()
+            
+            if nodeA.name == "player" { nodeB.removeFromParent() }
+            else { nodeA.removeFromParent() }
+        }
+        
+        // Player is taking damage from enemies
+        if nodeA.name == "player" && (nodeB.name == "meteor" || nodeB.name == "satellite" || nodeB.name == "rocket" || nodeB.name == "ufo" || nodeB.name == "ufoAttack") ||
+            (nodeA.name == "meteor" || nodeA.name == "satellite" || nodeA.name == "rocket" || nodeA.name == "ufo" || nodeA.name == "ufoAttack") && nodeB.name == "player" {
             soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
             soundEffects["explosion"]?.track?.volume = 0.5
+            
             if nodeA.name == "rocket" {
                 guard let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode) else { return }
                 rocketArray.remove(at: rocketIndex)
@@ -702,7 +793,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ufoArray.remove(at: ufoIndex)
             }
             
-            // Player invincibility period
+            // Player invulnerability period
             if nodeA.name == "player" {
                 nodeA.run(SKAction(named: "Invincibility")!)
                 contactB.categoryBitMask = 0
