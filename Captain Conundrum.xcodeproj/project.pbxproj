@@ -15,6 +15,8 @@
 		250EF16A1F34E7CF0042D674 /* techological.caf in Resources */ = {isa = PBXBuildFile; fileRef = 250EF1691F34E7CF0042D674 /* techological.caf */; };
 		250EF16C1F34EBB90042D674 /* laser7.caf in Resources */ = {isa = PBXBuildFile; fileRef = 250EF16B1F34EBB90042D674 /* laser7.caf */; };
 		251363E51F3A2AED00963B60 /* powerUp12.caf in Resources */ = {isa = PBXBuildFile; fileRef = 251363E41F3A2AED00963B60 /* powerUp12.caf */; };
+		251363E91F3A5A4900963B60 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 251363E71F3A5A4900963B60 /* Fabric.framework */; };
+		251363EA1F3A5A4900963B60 /* Answers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 251363E81F3A5A4900963B60 /* Answers.framework */; };
 		2513E3421F39454C009EE04B /* laser5_trimmed.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2513E3411F39454C009EE04B /* laser5_trimmed.caf */; };
 		2513E3441F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2513E3431F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf */; };
 		25192DE81F262E4800722D8F /* digital-sfx-set in Resources */ = {isa = PBXBuildFile; fileRef = 25192DE71F262E4800722D8F /* digital-sfx-set */; };
@@ -44,6 +46,8 @@
 		250EF1691F34E7CF0042D674 /* techological.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = techological.caf; sourceTree = "<group>"; };
 		250EF16B1F34EBB90042D674 /* laser7.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = laser7.caf; sourceTree = "<group>"; };
 		251363E41F3A2AED00963B60 /* powerUp12.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = powerUp12.caf; sourceTree = "<group>"; };
+		251363E71F3A5A4900963B60 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
+		251363E81F3A5A4900963B60 /* Answers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Answers.framework; sourceTree = "<group>"; };
 		2513E3411F39454C009EE04B /* laser5_trimmed.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = laser5_trimmed.caf; sourceTree = "<group>"; };
 		2513E3431F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = cc0_explosion_large_gun_powder_trimmed.caf; sourceTree = "<group>"; };
 		25192DE71F262E4800722D8F /* digital-sfx-set */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "digital-sfx-set"; sourceTree = "<group>"; };
@@ -71,6 +75,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				251363EA1F3A5A4900963B60 /* Answers.framework in Frameworks */,
+				251363E91F3A5A4900963B60 /* Fabric.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,6 +138,8 @@
 				254CF4251F26262F008711BC /* Assets.xcassets */,
 				254CF4271F26262F008711BC /* LaunchScreen.storyboard */,
 				254CF42A1F26262F008711BC /* Info.plist */,
+				251363E71F3A5A4900963B60 /* Fabric.framework */,
+				251363E81F3A5A4900963B60 /* Answers.framework */,
 			);
 			path = "Captain Conundrum";
 			sourceTree = "<group>";
@@ -146,6 +154,7 @@
 				254CF4111F26262F008711BC /* Sources */,
 				254CF4121F26262F008711BC /* Frameworks */,
 				254CF4131F26262F008711BC /* Resources */,
+				251363E61F3A55D400963B60 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -219,6 +228,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		251363E61F3A55D400963B60 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "./Fabric.framework/run 12304b10286a9a133a0382578567110bcc74a634 e7796ad8d01db4e5c34b8b9be43dca109b3d1fe9c303f6e117207def0a6f38f7";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		254CF4111F26262F008711BC /* Sources */ = {
@@ -354,9 +379,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = UF6E5BVT98;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Captain\\ Conundrum",
+					"$(PROJECT_DIR)/Captain\\ Conundrum",
+				);
 				INFOPLIST_FILE = "Captain Conundrum/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = Yes;
 				PRODUCT_BUNDLE_IDENTIFIER = "Make-School.Captain-Conundrum";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
@@ -368,8 +400,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = UF6E5BVT98;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Captain\\ Conundrum",
+					"$(PROJECT_DIR)/Captain\\ Conundrum",
+				);
 				INFOPLIST_FILE = "Captain Conundrum/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = No;
 				PRODUCT_BUNDLE_IDENTIFIER = "Make-School.Captain-Conundrum";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;

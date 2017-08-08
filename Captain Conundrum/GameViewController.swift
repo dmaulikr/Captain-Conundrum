@@ -10,12 +10,25 @@ import UIKit
 import SpriteKit
 import GameplayKit
 import AVFoundation // For AVAudioPlayer()
+//import Crashlytics // If using Answers with Crashlytics
+import Answers // If using Answers without Crashlytics
+
 
 class GameViewController: UIViewController {
     static var backgroundMusic: AVAudioPlayer! // Can be changed in options
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        /*let button = UIButton(type: UIButtonType.roundedRect)
+        button.setTitle("Trigger Key Metric", for: [])
+        button.addTarget(self, action: #selector(self.anImportantUserAction), for: UIControlEvents.touchUpInside)
+        button.sizeToFit()
+        button.center = self.view.center
+        view.addSubview(button)
+        
+        // TODO: Track the user action that is important for you.
+        Answers.logContentView(withName: "Tweet", contentType: "Video", contentId: "1234", customAttributes: ["Favorites Count":20, "Screen Orientation":"Landscape"])*/
         
         if let view = self.view as! SKView? {
             // Load the SKScene from 'MainMenu.sks'
@@ -46,6 +59,14 @@ class GameViewController: UIViewController {
                 print("Music can't be played.")
             }
         }
+    }
+    
+    func anImportantUserAction() {
+        
+        // TODO: Move this method and customize the name and parameters to track your key metrics
+        //       Use your own string attributes to track common values over time
+        //       Use your own number attributes to track median value over time
+        Answers.logCustomEvent(withName: "Video Played", customAttributes: ["Category":"Comedy", "Length":350])
     }
 
     override var shouldAutorotate: Bool {
