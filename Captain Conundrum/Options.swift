@@ -21,7 +21,10 @@ class Options: SKScene {
     var messageTime: CFTimeInterval = 0
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     var comingSoon: SKLabelNode! // Placeholder until features are implemented
-    var music: AVAudioPlayer!
+    var soundEffects: [String: (file: String, track: AVAudioPlayer?)] = [
+        "select": ("click1", nil),
+        "exit": ("switch34", nil)
+    ]
     
     override func didMove(to view: SKView) {
         buttonControls = childNode(withName: "buttonControls") as! MSButtonNode
@@ -34,38 +37,59 @@ class Options: SKScene {
         musicOff = childNode(withName: "musicOff") as! MSButtonNode
         comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
         
+        for (key: sound, value: (file: file, track: _)) in soundEffects {
+            // Get sound effects ready
+            let soundFilePath = Bundle.main.path(forResource: file, ofType: "caf")!
+            let soundFileURL = URL(fileURLWithPath: soundFilePath)
+            
+            do {
+                let player = try AVAudioPlayer(contentsOf: soundFileURL)
+                soundEffects[sound]?.track = player // Parameters are immutable
+                soundEffects[sound]?.track?.numberOfLoops = 0 // No loop
+            } catch {
+                print("Music can't be played.")
+            }
+        }
+        
         buttonControls.selectedHandler = { [unowned self] in
-            self.playSFX(file: "click1")
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
             self.comingSoon.isHidden = false
         }
         
         buttonCredits.selectedHandler = { [unowned self] in
-            self.playSFX(file: "click1")
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
             self.comingSoon.isHidden = false
         }
         
         buttonCustomize.selectedHandler = { [unowned self] in
-            self.playSFX(file: "click1")
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
             self.comingSoon.isHidden = false
         }
         
         leaderboards.selectedHandler = { [unowned self] in
-            self.playSFX(file: "click1")
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
             self.comingSoon.isHidden = false
         }
         
         achievements.selectedHandler = { [unowned self] in
-            self.playSFX(file: "click1")
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
             self.comingSoon.isHidden = false
         }
         
         buttonBack.selectedHandler = { [unowned self] in
-            self.playSFX(file: "switch34")
+            self.soundEffects["exit"]?.track?.prepareToPlay()
+            self.soundEffects["exit"]?.track?.play()
             self.loadMainMenu()
         }
         
         musicOn.selectedHandler = { [unowned self] in
-            self.playSFX(file: "click1")
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
             GameViewController.backgroundMusic.stop()
             self.musicOff.isHidden = false
         }
@@ -73,22 +97,6 @@ class Options: SKScene {
         musicOff.selectedHandler = { [unowned self] in
             GameViewController.backgroundMusic.play()
             self.musicOn.isHidden = false
-        }
-    }
-    
-    func playSFX(file: String) {
-        // Get sound effects ready
-        let soundFilePath = Bundle.main.path(forResource: file, ofType: "caf")!
-        let soundFileURL = URL(fileURLWithPath: soundFilePath)
-        
-        do {
-            let player = try AVAudioPlayer(contentsOf: soundFileURL)
-            music = player
-            music.numberOfLoops = 0 // No loop
-            music.prepareToPlay()
-            music.play()
-        } catch {
-            print("Music can't be played.")
         }
     }
     

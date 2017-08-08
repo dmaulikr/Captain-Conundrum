@@ -57,9 +57,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         "select": ("click1", nil),
         "incoming": ("highDown", nil),
         "exit": ("switch34", nil),
-        "attack": ("laser5", nil),
+        "attack": ("laser5_trimmed", nil),
         "enemy attack": ("laser7", nil),
-        "explosion": ("cc0_explosion_large_gun_powder", nil)
+        "explosion": ("cc0_explosion_large_gun_powder_trimmed", nil)
     ]
     
     // Other
@@ -205,16 +205,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             do {
                 let player = try AVAudioPlayer(contentsOf: soundFileURL)
-                soundEffects[sound]?.track = player
-                let track = soundEffects[sound]?.track ?? player // Causes parameter to be mutable
-                track.numberOfLoops = 0 // No loop
-                track.prepareToPlay()
+                soundEffects[sound]?.track = player // Parameters are immutable
+                soundEffects[sound]?.track?.numberOfLoops = 0 // No loop
             } catch {
                 print("Music can't be played.")
             }
         }
         
         buttonPause.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundEffects["select"]?.track?.play()
             if self.gameState == .gameOver { return }
             self.gameState = .paused
@@ -223,6 +222,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         buttonContinue.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundEffects["select"]?.track?.play()
             self.gameState = .active
             self.boxPause.isHidden = true
@@ -230,6 +230,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         buttonQuit.selectedHandler = { [unowned self] in
+            self.soundEffects["exit"]?.track?.prepareToPlay()
             self.soundEffects["exit"]?.track?.play()
             guard let skView = self.view as SKView! else {
                 print("Cound not get SKview")
@@ -250,6 +251,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         buttonRetry.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundEffects["select"]?.track?.play()
             self.boxGameOver.position.x = -320
             
@@ -283,6 +285,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if numberOfBlasts >= 3 { return } // Only 3 lasers allowed on screen at once
         // Copies allow for multiple attacks on screen
         let multiAttack = attack.copy() as! SKSpriteNode
+        soundEffects["attack"]?.track?.prepareToPlay()
         soundEffects["attack"]?.track?.play()
         addChild(multiAttack)
         multiAttack.position = player.position
@@ -333,6 +336,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let enemy = arc4random_uniform(4) // 4 enemies to choose from
         let enemyPosition = CGPoint(x: CGFloat.random(min: -117, max: 117), y: 305)
+        soundEffects["incoming"]?.track?.prepareToPlay()
         soundEffects["incoming"]?.track?.play()
         
         switch enemy {
@@ -389,6 +393,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Every 2 seconds, the UFO fires
             if ufoData[index].timer >= 2 {
                 let multiAttack = ufoAttack.copy() as! SKSpriteNode
+                soundEffects["enemy attack"]?.track?.prepareToPlay()
                 soundEffects["enemy attack"]?.track?.play()
                 addChild(multiAttack)
                 multiAttack.position = ufo.position
@@ -524,7 +529,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Player is doing damage
         if nodeA.name == "attack" && nodeB.name == "initialMeteor" || nodeA.name == "initialMeteor" && nodeB.name == "attack" {
+            soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
+            soundEffects["explosion"]?.track?.volume = 0.5
             if nodeA.name == "initialMeteor" {
                 contactA.categoryBitMask = 0 // Once hit, the enemy can't be hit mid-explosion
                 nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
@@ -548,7 +555,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "meteor" || nodeA.name == "meteor" && nodeB.name == "attack" {
+            soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
+            soundEffects["explosion"]?.track?.volume = 0.5
             if nodeA.name == "meteor" {
                 contactA.categoryBitMask = 0
                 nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
@@ -565,7 +574,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "satellite" || nodeA.name == "satellite" && nodeB.name == "attack" {
+            soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
+            soundEffects["explosion"]?.track?.volume = 0.5
             if nodeA.name == "satellite" {
                 contactA.categoryBitMask = 0
                 nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
@@ -582,7 +593,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "rocket" || nodeA.name == "rocket" && nodeB.name == "attack" {
+            soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
+            soundEffects["explosion"]?.track?.volume = 0.5
             if nodeA.name == "rocket" {
                 contactA.categoryBitMask = 0
                 guard let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode) else { return }
@@ -603,7 +616,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if nodeA.name == "attack" && nodeB.name == "ufo" || nodeA.name == "ufo" && nodeB.name == "attack" {
+            soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
+            soundEffects["explosion"]?.track?.volume = 0.5
             if nodeA.name == "ufo" {
                 contactA.categoryBitMask = 0
                 guard let ufoIndex = ufoArray.index(of: nodeA as! SKSpriteNode) else { return }
@@ -668,7 +683,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Player is taking damage (except with the boundaries)
         if nodeA.name == "player" && (nodeB.name != "boundary" && nodeB.name != "boundarySide") || (nodeA.name != "boundary" && nodeA.name != "boundarySide") && nodeB.name == "player" {
+            soundEffects["explosion"]?.track?.prepareToPlay()
             soundEffects["explosion"]?.track?.play()
+            soundEffects["explosion"]?.track?.volume = 0.5
             if nodeA.name == "rocket" {
                 guard let rocketIndex = rocketArray.index(of: nodeA as! SKSpriteNode) else { return }
                 rocketArray.remove(at: rocketIndex)

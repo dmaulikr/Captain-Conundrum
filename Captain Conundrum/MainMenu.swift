@@ -18,7 +18,11 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
     var scrollLayer: SKNode!
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     let scrollSpeed: CGFloat = 100
-    var music: AVAudioPlayer!
+    var soundEffects: [String: (file: String, track: AVAudioPlayer?)] = [
+        "select": ("click1", nil),
+        "attack": ("laser5_trimmed", nil),
+        "explosion": ("cc0_explosion_large_gun_powder_trimmed", nil)
+    ]
     
     override func didMove(to view: SKView) {
         player = childNode(withName: "player") as! MSButtonNode
@@ -28,8 +32,23 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         buttonOptions = childNode(withName: "buttonOptions") as! MSButtonNode
         scrollLayer = childNode(withName: "scrollLayer")
         
+        for (key: sound, value: (file: file, track: _)) in soundEffects {
+            // Get sound effects ready
+            let soundFilePath = Bundle.main.path(forResource: file, ofType: "caf")!
+            let soundFileURL = URL(fileURLWithPath: soundFilePath)
+            
+            do {
+                let player = try AVAudioPlayer(contentsOf: soundFileURL)
+                soundEffects[sound]?.track = player // Parameters are immutable
+                soundEffects[sound]?.track?.numberOfLoops = 0 // No loop
+            } catch {
+                print("Music can't be played.")
+            }
+        }
+        
         player.selectedHandler = { [unowned self] in // Prevents memory leaks from MSButtonNode
-            self.playSFX(file: "laser5")
+            self.soundEffects["attack"]?.track?.prepareToPlay()
+            self.soundEffects["attack"]?.track?.play()
             self.blast.physicsBody?.velocity = CGVector(dx: 0, dy: 500) // Secret button!
             
             if self.blast.position.y >= 325 {
@@ -38,12 +57,14 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         }
         
         buttonStart.selectedHandler = { [unowned self] in
-            self.playSFX(file: "click1")
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
             self.loadGame()
         }
         
         buttonOptions.selectedHandler = { [unowned self] in
-            self.playSFX(file: "click1")
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
             self.loadOptions()
         }
         
@@ -51,22 +72,6 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         let thrusters = SKEmitterNode(fileNamed: "Fire")!
         thrusters.position.y = -45
         addChild(thrusters)
-    }
-    
-    func playSFX(file: String) {
-        // Get sound effects ready
-        let soundFilePath = Bundle.main.path(forResource: file, ofType: "caf")!
-        let soundFileURL = URL(fileURLWithPath: soundFilePath)
-        
-        do {
-            let player = try AVAudioPlayer(contentsOf: soundFileURL)
-            music = player
-            music.numberOfLoops = 0 // No loop
-            music.prepareToPlay()
-            music.play()
-        } catch {
-            print("Music can't be played.")
-        }
     }
     
     func loadGame() {
@@ -132,7 +137,9 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         
         if nodeA.name == "blast" && nodeB.name == "title" || nodeA.name == "title" && nodeB.name == "blast" {
             // Title will spin out of control!
-            playSFX(file: "cc0_explosion_large_gun_powder")
+            soundEffects["explosion"]?.track?.prepareToPlay()
+            soundEffects["explosion"]?.track?.play()
+            soundEffects["explosion"]?.track?.volume = 0.5
             if nodeA.name == "blast" {
                 blast = nodeA as! SKSpriteNode
                 blast.position.y = 0
