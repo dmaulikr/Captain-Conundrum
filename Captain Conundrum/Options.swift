@@ -7,9 +7,10 @@
 //
 
 import SpriteKit
+import CoreMotion
 import AVFoundation
 
-class Options: SKScene {
+class Options: SKScene, SKPhysicsContactDelegate {
     var buttonControls: MSButtonNode!
     var buttonCredits: MSButtonNode!
     var buttonCustomize: MSButtonNode!
@@ -26,6 +27,16 @@ class Options: SKScene {
         "exit": ("switch34", nil)
     ]
     
+    var screenControls: SKSpriteNode!
+    var buttonSlow: MSButtonNode!
+    var buttonMedium: MSButtonNode!
+    var buttonFast: MSButtonNode!
+    var player: SKSpriteNode!
+    let thrusters = SKEmitterNode(fileNamed: "Fire")!
+    var motionManager: CMMotionManager!
+    var controlBoundary: SKSpriteNode!
+    var currentControl: SKSpriteNode!
+    var exitControls: MSButtonNode!
     var screenCredits: SKSpriteNode!
     var exitCredits: MSButtonNode!
     
@@ -39,6 +50,16 @@ class Options: SKScene {
         musicOn = childNode(withName: "musicOn") as! MSButtonNode
         musicOff = childNode(withName: "musicOff") as! MSButtonNode
         comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
+        
+        screenControls = childNode(withName: "screenControls") as! SKSpriteNode
+        buttonSlow = screenControls.childNode(withName: "buttonSlow") as! MSButtonNode
+        buttonMedium = screenControls.childNode(withName: "buttonMedium") as! MSButtonNode
+        buttonFast = screenControls.childNode(withName: "buttonFast") as! MSButtonNode
+        player = screenControls.childNode(withName: "player") as! SKSpriteNode
+        controlBoundary = screenControls.childNode(withName: "controlBoundary") as! SKSpriteNode
+        currentControl = screenControls.childNode(withName: "currentControl") as! SKSpriteNode
+        exitControls = screenControls.childNode(withName: "exitControls") as! MSButtonNode
+        
         screenCredits = childNode(withName: "screenCredits") as! SKSpriteNode
         exitCredits = screenCredits.childNode(withName: "exitCredits") as! MSButtonNode
         
@@ -59,7 +80,31 @@ class Options: SKScene {
         buttonControls.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundEffects["select"]?.track?.play()
-            self.comingSoon.isHidden = false
+            self.screenControls.position.x = 0
+        }
+        
+        buttonSlow.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
+            self.currentControl.position.y = 140
+        }
+        
+        buttonMedium.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
+            self.currentControl.position.y = 75
+        }
+        
+        buttonFast.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundEffects["select"]?.track?.play()
+            self.currentControl.position.y = 10
+        }
+        
+        exitControls.selectedHandler = { [unowned self] in
+            self.soundEffects["exit"]?.track?.prepareToPlay()
+            self.soundEffects["exit"]?.track?.play()
+            self.screenControls.position.x = 350
         }
         
         buttonCredits.selectedHandler = { [unowned self] in
@@ -109,6 +154,13 @@ class Options: SKScene {
             GameViewController.backgroundMusic.play()
             self.musicOn.isHidden = false
         }
+        
+        physicsWorld.contactDelegate = self
+        motionManager = CMMotionManager()
+        motionManager.startAccelerometerUpdates()
+        thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45)
+        thrusters.zPosition = 2
+        screenControls.addChild(thrusters)
     }
     
     func loadMainMenu() {
@@ -145,5 +197,11 @@ class Options: SKScene {
             comingSoon.isHidden = true // Returns to default state
             messageTime = 0 // Reset timer for each cycle
         }
+        
+        guard let motion = motionManager.accelerometerData else {
+            return // Accelerometer isn't ready until the next frame
+        }
+        player.position.x += CGFloat(Double(motion.acceleration.x) * 15)
+        thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45) // Fire moves alongside player
     }
 }
