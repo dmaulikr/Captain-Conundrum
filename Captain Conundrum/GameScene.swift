@@ -8,6 +8,7 @@
 
 import SpriteKit
 import CoreMotion
+import Foundation
 import AVFoundation
 
 enum GameState {
@@ -23,12 +24,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var rocket: SKSpriteNode!
     var ufo: SKSpriteNode!
     let thrusters = SKEmitterNode(fileNamed: "Fire")!
+    var enemySpeed: [String: Double] = [
+        // Info about each enemy
+        "meteor": -100,
+        "satelliteX": -200, "satelliteY": -200,
+        "rocket": -300,
+        "ufo+": 150, "ufo-": -150,
+        "powerUp": -400
+    ]
     
     // Power ups
     var powerupHealth: SKSpriteNode!
     var powerupRapidFire: SKSpriteNode!
     var powerupSpread: SKSpriteNode!
     var powerupInvincible: SKSpriteNode!
+    var hasPower: [String: Bool] = [
+        // Determines which power up(s) the player has
+        "health": false,
+        "rapidFire": false,
+        "spread": false,
+        "invincible": false
+    ]
     
     // Buttons
     var buttonPause: MSButtonNode!
@@ -43,22 +59,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var scrollLayer: SKNode!
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     let scrollSpeed: CGFloat = 100
-    var enemySpeed: [String: Double] = [
-        // Info about each enemy
-        "meteor": -100,
-        "satelliteX": -200, "satelliteY": -200,
-        "rocket": -300,
-        "ufo+": 150, "ufo-": -150,
-        "powerUp": -400
-    ]
     
     // Timers (in seconds)
-    var messageTime:      CFTimeInterval = 0 // Start message
-    var enemySpawnTimer:  CFTimeInterval = 0 // Enemy spawning
-    var powerSpawnTimer:  CFTimeInterval = 0 // Power up spawning
-    var touchTime:        CFTimeInterval = 0 // Holding down touch
-    var fadeTime:         CFTimeInterval = 0 // Invulnerable to damage
-    var powerTime:        CFTimeInterval = 0 // Power up active
+    var messageTime:     CFTimeInterval = 0 // Start message
+    var enemySpawnTimer: CFTimeInterval = 0 // Enemy spawning
+    var powerSpawnTimer: CFTimeInterval = 0 // Power up spawning
+    var touchTime:       CFTimeInterval = 0 // Holding down touch
+    var fadeTime:        CFTimeInterval = 0 // Invulnerable to damage
+    var powerTime:       CFTimeInterval = 0 // Power up active
     
     // Music
     var soundEffects: [String: (file: String, track: AVAudioPlayer?)] = [
@@ -78,6 +86,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var motionManager: CMMotionManager!
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
     var numberOfBlasts = 0
+    var blastLimit = 3 // Only 3 lasers allowed on screen at once
+    var timeBetweenBlasts = 0.5 // Auto-fire every 0.5 seconds
     var hits: Double = 0
     var misses: Double = 0
     var rocketArray: [SKSpriteNode] = []
@@ -102,7 +112,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         blast.physicsBody?.allowsRotation = false
         blast.physicsBody?.affectedByGravity = false
         blast.physicsBody?.categoryBitMask = 4
-        blast.physicsBody?.collisionBitMask = 4
+        blast.physicsBody?.collisionBitMask = 0
         blast.physicsBody?.contactTestBitMask = 634 // In contact with all enemies and boundaries (including power ups)
         return blast
     } ()
@@ -115,7 +125,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         blast.physicsBody?.allowsRotation = false
         blast.physicsBody?.affectedByGravity = false
         blast.physicsBody?.categoryBitMask = 256
-        blast.physicsBody?.collisionBitMask = 256
+        blast.physicsBody?.collisionBitMask = 0
         blast.physicsBody?.contactTestBitMask = 258 // In contact with player and bottom boundary
         return blast
     } ()
@@ -297,7 +307,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func shoot() {
-        if numberOfBlasts >= 3 { return } // Only 3 lasers allowed on screen at once
+        if numberOfBlasts >= blastLimit { return }
         // Copies allow for multiple attacks on screen
         let multiAttack = attack.copy() as! SKSpriteNode
         soundEffects["attack"]?.track?.prepareToPlay()
@@ -306,6 +316,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         multiAttack.position = player.position
         multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: 500)
         numberOfBlasts += 1
+        
+        // Add more attacks if power ups are enabled
+        if blastLimit > 6 {
+            let secondAttack = attack.copy() as! SKSpriteNode
+            addChild(secondAttack)
+            secondAttack.position = player.position
+            secondAttack.zRotation = 10
+            secondAttack.physicsBody?.velocity = CGVector(dx: -100, dy: 500)
+            numberOfBlasts += 1
+            
+            let thirdAttack = attack.copy() as! SKSpriteNode
+            addChild(thirdAttack)
+            thirdAttack.position = player.position
+            thirdAttack.zRotation = -10
+            thirdAttack.physicsBody?.velocity = CGVector(dx: 100, dy: 500)
+            numberOfBlasts += 1
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -480,6 +507,52 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func powerHealth() {
+        // Player restores health
+        if healthBar.xScale >= 1.54 {
+            healthBar.xScale = 2.2 // Health bar won't extend beyond border
+        } else {
+            healthBar.xScale += 0.66
+        }
+        
+        // Turn the health bar back to green if health is more than half full
+        if healthBar.xScale > 1.1 {
+            healthBar.texture = SKTexture(imageNamed: "green_button04")
+        }
+        
+        hasPower["health"] = false
+    }
+    
+    func powerRapidFire() {
+        // Player can shoot more lasers at once
+        if hasPower["spread"]! { blastLimit = 18 } // The two powers can stack
+        else { blastLimit = 6 }
+        
+        timeBetweenBlasts = 0.25
+    }
+    
+    func powerSpreadShot() {
+        // Player can shoot in multiple directions at once
+        if hasPower["rapidFire"]! { blastLimit = 18 }
+        else { blastLimit = 9 }
+    }
+    
+    func powerInvincible() {
+        // Player is invulnerable to damage for 10 seconds
+        powerTime += fixedDelta
+        player.physicsBody?.contactTestBitMask = 0
+        
+        if abs(powerTime / 2 - round(powerTime / 2)) <= 0.01 { // Action needs to refresh every 2 seconds
+            player.run(SKAction(named: "Invincibility")!)
+        }
+        
+        if powerTime >= 10 {
+            player.physicsBody?.contactTestBitMask = 1016
+            powerTime = 0
+            hasPower["invincible"] = false
+        }
+    }
+    
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         if gameState == .paused { return }
@@ -531,7 +604,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if isTouching {
             touchTime += fixedDelta
             
-            if touchTime >= 0.5 { // Auto-fire every 0.5 seconds
+            if touchTime >= timeBetweenBlasts {
                 shoot()
                 touchTime = 0
             }
@@ -550,6 +623,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         rocketAI()
         ufoAI()
+        
+        if hasPower["health"]! { powerHealth() }
+        if hasPower["rapidFire"]! { powerRapidFire() }
+        if hasPower["spread"]! { powerSpreadShot() }
+        if hasPower["invincible"]! { powerInvincible() }
     }
     
     func playerScoreUpdate() {
@@ -766,6 +844,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             soundEffects["power up"]?.track?.prepareToPlay()
             soundEffects["power up"]?.track?.play()
             
+            if nodeA.name == "powerupHealth" || nodeB.name == "powerupHealth" {
+                hasPower["health"] = true
+            } else if nodeA.name == "powerupRapidFire" || nodeB.name == "powerupRapidFire" {
+                hasPower["rapidFire"] = true
+            } else if nodeA.name == "powerupSpread" || nodeB.name == "powerupSpread" {
+                hasPower["spread"] = true
+            } else if nodeA.name == "powerupInvincible" || nodeB.name == "powerupInvincible" {
+                hasPower["invincible"] = true
+            }
+            
             if nodeA.name == "player" { nodeB.removeFromParent() }
             else { nodeA.removeFromParent() }
         }
@@ -792,6 +880,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ufoData.remove(at: ufoIndex)
                 ufoArray.remove(at: ufoIndex)
             }
+            
+            // Player loses all power ups
+            for (power, _) in hasPower {
+                hasPower[power] = false
+            }
+            blastLimit = 3
+            timeBetweenBlasts = 0.5
             
             // Player invulnerability period
             if nodeA.name == "player" {
