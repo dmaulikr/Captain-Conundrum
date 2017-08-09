@@ -82,6 +82,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Other
     var scoreLabel: SKLabelNode!
+    var timeLabel: SKLabelNode!
+    var currentMessage: SKLabelNode!
     var healthBar: SKSpriteNode!
     var motionManager: CMMotionManager!
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
@@ -101,6 +103,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var score = 0 {
         didSet {
             scoreLabel.text = String(score)
+        }
+    }
+    
+    var timeLimit: Int = 10 { // Power ups only last 10 seconds
+        didSet {
+            timeLabel.text = String(timeLimit)
         }
     }
     
@@ -137,6 +145,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         label.position = CGPoint(x: 0, y: 0)
         label.zPosition = 1
         label.text = "Start"
+        return label
+    } ()
+    
+    var powerupMessage: SKLabelNode = {
+        let label = SKLabelNode(fontNamed: "Britannic Bold")
+        label.fontSize = 36
+        label.fontColor = .green
+        label.position = CGPoint(x: 0, y: 180)
+        label.zPosition = 2
         return label
     } ()
     
@@ -221,6 +238,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         scrollLayer = childNode(withName: "scrollLayer")
         scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
+        timeLabel = childNode(withName: "timeLabel") as! SKLabelNode
         healthBar = childNode(withName: "healthBar") as! SKSpriteNode
         
         for (key: sound, value: (file: file, track: _)) in soundEffects {
@@ -411,8 +429,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func spawnPowerUp() {
-        // Randomly spawns a power up from the top every 20 seconds
-        if powerSpawnTimer < 20 { return }
+        // Randomly spawns a power up from the top every minute
+        if powerSpawnTimer < 60 { return }
         
         let powerUp = arc4random_uniform(4) // 4 power ups to choose from
         let powerUpPosition = CGPoint(x: CGFloat.random(min: -117, max: 117), y: 305)
@@ -508,7 +526,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func powerHealth() {
-        // Player restores health
+        // Player restores health (the only power without a timer)
         if healthBar.xScale >= 1.54 {
             healthBar.xScale = 2.2 // Health bar won't extend beyond border
         } else {
@@ -521,26 +539,68 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         hasPower["health"] = false
+        powerupHealth.position.x = 250
     }
     
     func powerRapidFire() {
         // Player can shoot more lasers at once
-        if hasPower["spread"]! { blastLimit = 18 } // The two powers can stack
-        else { blastLimit = 6 }
-        
+        powerupRapidFire.position = CGPoint(x: -120, y: 210)
+        powerupRapidFire.physicsBody?.categoryBitMask = 0 // Don't shoot the power up!
+        blastLimit = 6
         timeBetweenBlasts = 0.25
+        powerTime += fixedDelta
+        
+        if abs(powerTime - round(powerTime)) <= 0.01 {
+            // Time label decreases every second
+            timeLimit -= 1
+        }
+        
+        if powerTime >= 10 {
+            blastLimit = 3
+            timeBetweenBlasts = 0.5
+            powerTime = 0
+            hasPower["rapidFire"] = false
+            timeLabel.isHidden = true
+            timeLimit = 10
+            powerupRapidFire.position.x = 300
+            powerupRapidFire.physicsBody?.categoryBitMask = 512
+        }
     }
     
     func powerSpreadShot() {
         // Player can shoot in multiple directions at once
-        if hasPower["rapidFire"]! { blastLimit = 18 }
-        else { blastLimit = 9 }
+        powerupSpread.position = CGPoint(x: -120, y: 210)
+        powerupSpread.physicsBody?.categoryBitMask = 0
+        blastLimit = 9
+        powerTime += fixedDelta
+        
+        if abs(powerTime - round(powerTime)) <= 0.01 {
+            // Time label decreases every second
+            timeLimit -= 1
+        }
+        
+        if powerTime >= 10 {
+            blastLimit = 3
+            powerTime = 0
+            hasPower["spread"] = false
+            timeLabel.isHidden = true
+            timeLimit = 10
+            powerupSpread.position.x = 350
+            powerupSpread.physicsBody?.categoryBitMask = 512
+        }
     }
     
     func powerInvincible() {
         // Player is invulnerable to damage for 10 seconds
-        powerTime += fixedDelta
+        powerupInvincible.position = CGPoint(x: -120, y: 210)
+        powerupInvincible.physicsBody?.categoryBitMask = 0
         player.physicsBody?.contactTestBitMask = 0
+        powerTime += fixedDelta
+        
+        if abs(powerTime - round(powerTime)) <= 0.01 {
+            // Time label decreases every second
+            timeLimit -= 1
+        }
         
         if abs(powerTime / 2 - round(powerTime / 2)) <= 0.01 { // Action needs to refresh every 2 seconds
             player.run(SKAction(named: "Invincibility")!)
@@ -550,6 +610,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             player.physicsBody?.contactTestBitMask = 1016
             powerTime = 0
             hasPower["invincible"] = false
+            timeLabel.isHidden = true
+            timeLimit = 10
+            powerupInvincible.position.x = 400
+            powerupInvincible.physicsBody?.categoryBitMask = 512
         }
     }
     
@@ -577,12 +641,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         spawnEnemy()
         spawnPowerUp()
         
-        if messageTime > 0 { // Can hit more meteors without affecting start timer
+        if messageTime > 0 { // Can hit more meteors without affecting timer
             messageTime += fixedDelta
             
-            // After 1 second, Start disappears
+            // After 1 second, the message disappears
             if messageTime >= 1 {
-                startMessage.removeFromParent()
+                if currentMessage == startMessage {
+                    startMessage.removeFromParent()
+                } else {
+                    powerupMessage.removeFromParent()
+                }
                 messageTime = 0 // Reset time for any future messages
             }
         }
@@ -625,9 +693,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ufoAI()
         
         if hasPower["health"]! { powerHealth() }
-        if hasPower["rapidFire"]! { powerRapidFire() }
-        if hasPower["spread"]! { powerSpreadShot() }
-        if hasPower["invincible"]! { powerInvincible() }
+        else if hasPower["rapidFire"]! { powerRapidFire() }
+        else if hasPower["spread"]! { powerSpreadShot() }
+        else if hasPower["invincible"]! { powerInvincible() }
     }
     
     func playerScoreUpdate() {
@@ -679,6 +747,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             hits += 1
             if initialMeteorsHit == 3 {
                 addChild(startMessage) // Player has completed tutorial section
+                currentMessage = startMessage
                 scoreLabel.isHidden = false
                 messageTime += fixedDelta
                 gameStart = true
@@ -845,15 +914,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             soundEffects["power up"]?.track?.play()
             
             if nodeA.name == "powerupHealth" || nodeB.name == "powerupHealth" {
+                powerupMessage.text = "Health"
+                addChild(powerupMessage)
+                messageTime += fixedDelta
                 hasPower["health"] = true
             } else if nodeA.name == "powerupRapidFire" || nodeB.name == "powerupRapidFire" {
+                powerupMessage.text = "Rapid Fire"
+                addChild(powerupMessage)
+                messageTime += fixedDelta
+                timeLabel.isHidden = false
                 hasPower["rapidFire"] = true
             } else if nodeA.name == "powerupSpread" || nodeB.name == "powerupSpread" {
+                powerupMessage.text = "Spread Shot"
+                addChild(powerupMessage)
+                messageTime += fixedDelta
+                timeLabel.isHidden = false
                 hasPower["spread"] = true
             } else if nodeA.name == "powerupInvincible" || nodeB.name == "powerupInvincible" {
+                powerupMessage.text = "Invincibility"
+                addChild(powerupMessage)
+                messageTime += fixedDelta
+                timeLabel.isHidden = false
                 hasPower["invincible"] = true
             }
             
+            currentMessage = powerupMessage
             if nodeA.name == "player" { nodeB.removeFromParent() }
             else { nodeA.removeFromParent() }
         }
@@ -880,13 +965,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ufoData.remove(at: ufoIndex)
                 ufoArray.remove(at: ufoIndex)
             }
-            
-            // Player loses all power ups
-            for (power, _) in hasPower {
-                hasPower[power] = false
-            }
-            blastLimit = 3
-            timeBetweenBlasts = 0.5
             
             // Player invulnerability period
             if nodeA.name == "player" {
