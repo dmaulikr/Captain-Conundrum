@@ -606,7 +606,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             timeLimit -= 1
         }
         
-        if abs(powerTime / 2 - round(powerTime / 2)) <= 0.01 { // Action needs to refresh every 2 seconds
+        if abs(powerTime / 2 - round(powerTime / 2)) <= 0.01 && powerTime <= 8 { // Action needs to refresh every 2 seconds and not extend toward the end
             player.run(SKAction(named: "Invincibility")!)
         }
         
