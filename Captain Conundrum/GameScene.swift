@@ -69,6 +69,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var powerTime:       CFTimeInterval = 0 // Power up active
     
     // Music
+    let soundQueue = OperationQueue()
     var soundEffects: [String: (file: String, track: AVAudioPlayer?)] = [
         // Stores all music tracks
         "select": ("click1", nil),
@@ -121,7 +122,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         blast.physicsBody?.affectedByGravity = false
         blast.physicsBody?.categoryBitMask = 4
         blast.physicsBody?.collisionBitMask = 0
-        blast.physicsBody?.contactTestBitMask = 634 // In contact with all enemies and boundaries (including power ups)
+        blast.physicsBody?.contactTestBitMask = 122 // In contact with all enemies and boundaries
         return blast
     } ()
     
@@ -255,9 +256,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        // Play sounds in a thread instead of in a separate program
+        soundQueue.qualityOfService = QualityOfService.background
+        
         buttonPause.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             if self.gameState == .gameOver { return }
             self.gameState = .paused
             self.boxPause.isHidden = false
@@ -266,7 +270,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         buttonContinue.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.gameState = .active
             self.boxPause.isHidden = true
             self.isPaused = false
@@ -274,7 +278,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         buttonQuit.selectedHandler = { [unowned self] in
             self.soundEffects["exit"]?.track?.prepareToPlay()
-            self.soundEffects["exit"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["exit"]?.track?.play() }
             guard let skView = self.view as SKView! else {
                 print("Cound not get SKview")
                 return
@@ -295,7 +299,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         buttonRetry.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.boxGameOver.position.x = -320
             
             guard let skView = self.view as SKView! else {
@@ -329,7 +333,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Copies allow for multiple attacks on screen
         let multiAttack = attack.copy() as! SKSpriteNode
         soundEffects["attack"]?.track?.prepareToPlay()
-        soundEffects["attack"]?.track?.play()
+        soundQueue.addOperation { self.soundEffects["attack"]?.track?.play() }
         addChild(multiAttack)
         multiAttack.position = player.position
         multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: 500)
@@ -397,7 +401,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let enemy = arc4random_uniform(4) // 4 enemies to choose from
         let enemyPosition = CGPoint(x: CGFloat.random(min: -117, max: 117), y: 305)
         soundEffects["incoming"]?.track?.prepareToPlay()
-        soundEffects["incoming"]?.track?.play()
+        soundQueue.addOperation { self.soundEffects["incoming"]?.track?.play() }
         
         switch enemy {
             case 0:
@@ -435,7 +439,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let powerUp = arc4random_uniform(4) // 4 power ups to choose from
         let powerUpPosition = CGPoint(x: CGFloat.random(min: -117, max: 117), y: 305)
         soundEffects["incoming"]?.track?.prepareToPlay()
-        soundEffects["incoming"]?.track?.play()
+        soundQueue.addOperation { self.soundEffects["incoming"]?.track?.play() }
         
         switch powerUp {
             case 0:
@@ -489,7 +493,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if ufoData[index].timer >= 2 {
                 let multiAttack = ufoAttack.copy() as! SKSpriteNode
                 soundEffects["enemy attack"]?.track?.prepareToPlay()
-                soundEffects["enemy attack"]?.track?.play()
+                soundQueue.addOperation { self.soundEffects["enemy attack"]?.track?.play() }
                 addChild(multiAttack)
                 multiAttack.position = ufo.position
                 multiAttack.physicsBody?.velocity = CGVector(dx: 0, dy: -250)
@@ -729,7 +733,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Player is doing damage
         if nodeA.name == "attack" && nodeB.name == "initialMeteor" || nodeA.name == "initialMeteor" && nodeB.name == "attack" {
             soundEffects["explosion"]?.track?.prepareToPlay()
-            soundEffects["explosion"]?.track?.play()
+            soundQueue.addOperation { self.soundEffects["explosion"]?.track?.play() }
             soundEffects["explosion"]?.track?.volume = 0.5
             
             if nodeA.name == "initialMeteor" {
@@ -756,7 +760,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if nodeA.name == "attack" && nodeB.name == "meteor" || nodeA.name == "meteor" && nodeB.name == "attack" {
             soundEffects["explosion"]?.track?.prepareToPlay()
-            soundEffects["explosion"]?.track?.play()
+            soundQueue.addOperation { self.soundEffects["explosion"]?.track?.play() }
             soundEffects["explosion"]?.track?.volume = 0.5
             
             if nodeA.name == "meteor" {
@@ -776,7 +780,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if nodeA.name == "attack" && nodeB.name == "satellite" || nodeA.name == "satellite" && nodeB.name == "attack" {
             soundEffects["explosion"]?.track?.prepareToPlay()
-            soundEffects["explosion"]?.track?.play()
+            soundQueue.addOperation { self.soundEffects["explosion"]?.track?.play() }
             soundEffects["explosion"]?.track?.volume = 0.5
             
             if nodeA.name == "satellite" {
@@ -796,7 +800,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if nodeA.name == "attack" && nodeB.name == "rocket" || nodeA.name == "rocket" && nodeB.name == "attack" {
             soundEffects["explosion"]?.track?.prepareToPlay()
-            soundEffects["explosion"]?.track?.play()
+            soundQueue.addOperation { self.soundEffects["explosion"]?.track?.play() }
             soundEffects["explosion"]?.track?.volume = 0.5
             
             if nodeA.name == "rocket" {
@@ -820,7 +824,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if nodeA.name == "attack" && nodeB.name == "ufo" || nodeA.name == "ufo" && nodeB.name == "attack" {
             soundEffects["explosion"]?.track?.prepareToPlay()
-            soundEffects["explosion"]?.track?.play()
+            soundQueue.addOperation { self.soundEffects["explosion"]?.track?.play() }
             soundEffects["explosion"]?.track?.volume = 0.5
             
             if nodeA.name == "ufo" {
@@ -842,27 +846,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             numberOfBlasts -= 1
             hits += 1
             score += 20
-        }
-        
-        // Don't shoot the power ups!
-        if nodeA.name == "attack" && (nodeB.name == "powerupHealth" || nodeB.name == "powerupRapidFire" || nodeB.name == "powerupSpread" || nodeB.name == "powerupInvincible") ||
-            (nodeA.name == "powerupHealth" || nodeA.name == "powerupRapidFire" || nodeA.name == "powerupSpread" || nodeA.name == "powerupInvincible") && nodeB.name == "attack" {
-            soundEffects["explosion"]?.track?.prepareToPlay()
-            soundEffects["explosion"]?.track?.play()
-            soundEffects["explosion"]?.track?.volume = 0.5
-            
-            if nodeB.name == "attack" {
-                contactA.categoryBitMask = 0
-                nodeA.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
-                nodeB.removeFromParent()
-            } else {
-                contactB.categoryBitMask = 0
-                nodeB.run(SKAction.sequence([SKAction(named: "Explode")!, SKAction.removeFromParent()]))
-                nodeA.removeFromParent()
-            }
-            
-            numberOfBlasts -= 1
-            hits += 1
         }
         
         // Satellite hits the side
@@ -911,7 +894,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if nodeA.name == "player" && (nodeB.name == "powerupHealth" || nodeB.name == "powerupRapidFire" || nodeB.name == "powerupSpread" || nodeB.name == "powerupInvincible") ||
             (nodeA.name == "powerupHealth" || nodeA.name == "powerupRapidFire" || nodeA.name == "powerupSpread" || nodeA.name == "powerupInvincible") && nodeB.name == "player" {
             soundEffects["power up"]?.track?.prepareToPlay()
-            soundEffects["power up"]?.track?.play()
+            soundQueue.addOperation { self.soundEffects["power up"]?.track?.play() }
             
             if nodeA.name == "powerupHealth" || nodeB.name == "powerupHealth" {
                 powerupMessage.text = "Health"
@@ -947,7 +930,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if nodeA.name == "player" && (nodeB.name == "meteor" || nodeB.name == "satellite" || nodeB.name == "rocket" || nodeB.name == "ufo" || nodeB.name == "ufoAttack") ||
             (nodeA.name == "meteor" || nodeA.name == "satellite" || nodeA.name == "rocket" || nodeA.name == "ufo" || nodeA.name == "ufoAttack") && nodeB.name == "player" {
             soundEffects["explosion"]?.track?.prepareToPlay()
-            soundEffects["explosion"]?.track?.play()
+            soundQueue.addOperation { self.soundEffects["explosion"]?.track?.play() }
             soundEffects["explosion"]?.track?.volume = 0.5
             
             if nodeA.name == "rocket" {

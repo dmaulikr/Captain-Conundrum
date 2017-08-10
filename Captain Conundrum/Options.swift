@@ -22,6 +22,7 @@ class Options: SKScene, SKPhysicsContactDelegate {
     var messageTime: CFTimeInterval = 0
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
     var comingSoon: SKLabelNode! // Placeholder until features are implemented
+    let soundQueue = OperationQueue()
     var soundEffects: [String: (file: String, track: AVAudioPlayer?)] = [
         "select": ("click1", nil),
         "exit": ("switch34", nil)
@@ -77,75 +78,77 @@ class Options: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        soundQueue.qualityOfService = QualityOfService.background
+        
         buttonControls.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.screenControls.position.x = 0
         }
         
         buttonSlow.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.currentControl.position.y = 140
         }
         
         buttonMedium.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.currentControl.position.y = 75
         }
         
         buttonFast.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.currentControl.position.y = 10
         }
         
         exitControls.selectedHandler = { [unowned self] in
             self.soundEffects["exit"]?.track?.prepareToPlay()
-            self.soundEffects["exit"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["exit"]?.track?.play() }
             self.screenControls.position.x = 350
         }
         
         buttonCredits.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.screenCredits.position.x = 0
         }
         
         exitCredits.selectedHandler = { [unowned self] in
             self.soundEffects["exit"]?.track?.prepareToPlay()
-            self.soundEffects["exit"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["exit"]?.track?.play() }
             self.screenCredits.position.x = -350
         }
         
         buttonCustomize.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.comingSoon.isHidden = false
         }
         
         leaderboards.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.comingSoon.isHidden = false
         }
         
         achievements.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.comingSoon.isHidden = false
         }
         
         buttonBack.selectedHandler = { [unowned self] in
             self.soundEffects["exit"]?.track?.prepareToPlay()
-            self.soundEffects["exit"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["exit"]?.track?.play() }
             self.loadMainMenu()
         }
         
         musicOn.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundEffects["select"]?.track?.play()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             GameViewController.backgroundMusic.stop()
             self.musicOff.isHidden = false
         }
