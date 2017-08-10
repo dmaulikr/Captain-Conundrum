@@ -38,8 +38,21 @@ class Options: SKScene, SKPhysicsContactDelegate {
     var controlBoundary: SKSpriteNode!
     var currentControl: SKSpriteNode!
     var exitControls: MSButtonNode!
+    
     var screenCredits: SKSpriteNode!
     var exitCredits: MSButtonNode!
+    
+    var screenCustomize: SKSpriteNode!
+    var design1: MSButtonNode!
+    var design2: MSButtonNode!
+    var design3: MSButtonNode!
+    var colorBlue: MSButtonNode!
+    var colorGreen: MSButtonNode!
+    var colorOrange: MSButtonNode!
+    var colorRed: MSButtonNode!
+    var outlineShip: SKSpriteNode!
+    var outlineColor: SKSpriteNode!
+    var exitCustomize: MSButtonNode!
     
     override func didMove(to view: SKView) {
         buttonControls = childNode(withName: "buttonControls") as! MSButtonNode
@@ -64,6 +77,18 @@ class Options: SKScene, SKPhysicsContactDelegate {
         screenCredits = childNode(withName: "screenCredits") as! SKSpriteNode
         exitCredits = screenCredits.childNode(withName: "exitCredits") as! MSButtonNode
         
+        screenCustomize = childNode(withName: "screenCustomize") as! SKSpriteNode
+        design1 = screenCustomize.childNode(withName: "design1") as! MSButtonNode
+        design2 = screenCustomize.childNode(withName: "design2") as! MSButtonNode
+        design3 = screenCustomize.childNode(withName: "design3") as! MSButtonNode
+        colorBlue = screenCustomize.childNode(withName: "colorBlue") as! MSButtonNode
+        colorGreen = screenCustomize.childNode(withName: "colorGreen") as! MSButtonNode
+        colorOrange = screenCustomize.childNode(withName: "colorOrange") as! MSButtonNode
+        colorRed = screenCustomize.childNode(withName: "colorRed") as! MSButtonNode
+        outlineShip = screenCustomize.childNode(withName: "outlineShip") as! SKSpriteNode
+        outlineColor = screenCustomize.childNode(withName: "outlineColor") as! SKSpriteNode
+        exitCustomize = screenCustomize.childNode(withName: "exitCustomize") as! MSButtonNode
+        
         for (key: sound, value: (file: file, track: _)) in soundEffects {
             // Get sound effects ready
             let soundFilePath = Bundle.main.path(forResource: file, ofType: "caf")!
@@ -80,6 +105,7 @@ class Options: SKScene, SKPhysicsContactDelegate {
         
         soundQueue.qualityOfService = QualityOfService.background
         
+        // Controls
         buttonControls.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
@@ -110,6 +136,7 @@ class Options: SKScene, SKPhysicsContactDelegate {
             self.screenControls.position.x = 350
         }
         
+        // Credits
         buttonCredits.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
@@ -122,12 +149,62 @@ class Options: SKScene, SKPhysicsContactDelegate {
             self.screenCredits.position.x = -350
         }
         
+        // Customize
         buttonCustomize.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
-            self.comingSoon.isHidden = false
+            self.screenCustomize.position.y = 0
         }
         
+        design1.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.outlineShip.position = self.design1.position
+        }
+        
+        design2.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.outlineShip.position = self.design2.position
+        }
+        
+        design3.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.outlineShip.position = self.design3.position
+        }
+        
+        colorBlue.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.outlineColor.position = self.colorBlue.position
+        }
+        
+        colorGreen.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.outlineColor.position = self.colorGreen.position
+        }
+        
+        colorOrange.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.outlineColor.position = self.colorOrange.position
+        }
+        
+        colorRed.selectedHandler = { [unowned self] in
+            self.soundEffects["select"]?.track?.prepareToPlay()
+            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.outlineColor.position = self.colorRed.position
+        }
+        
+        exitCustomize.selectedHandler = { [unowned self] in
+            self.soundEffects["exit"]?.track?.prepareToPlay()
+            self.soundQueue.addOperation { self.soundEffects["exit"]?.track?.play() }
+            self.screenCustomize.position.y = -600
+        }
+        
+        // Other
         leaderboards.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
