@@ -43,6 +43,7 @@ class Options: SKScene, SKPhysicsContactDelegate {
     var exitCredits: MSButtonNode!
     
     var screenCustomize: SKSpriteNode!
+    static var playerTexture: SKTexture!
     var design1: MSButtonNode!
     var design2: MSButtonNode!
     var design3: MSButtonNode!
@@ -88,6 +89,28 @@ class Options: SKScene, SKPhysicsContactDelegate {
         outlineShip = screenCustomize.childNode(withName: "outlineShip") as! SKSpriteNode
         outlineColor = screenCustomize.childNode(withName: "outlineColor") as! SKSpriteNode
         exitCustomize = screenCustomize.childNode(withName: "exitCustomize") as! MSButtonNode
+        
+        // Position of outlineShip
+        switch UserDefaults().integer(forKey: "shipDesign") {
+            case 1...4:
+                outlineShip.position = design1.position
+            case 5...8:
+                outlineShip.position = design2.position
+            default:
+                outlineShip.position = design3.position
+        }
+        
+        // Position of outlineColor
+        switch UserDefaults().integer(forKey: "shipDesign") {
+            case 1,5,9:
+                outlineColor.position = colorBlue.position
+            case 3,7,10:
+                outlineColor.position = colorOrange.position
+            case 4,8,11:
+                outlineColor.position = colorRed.position
+            default:
+                outlineColor.position = colorGreen.position
+        }
         
         for (key: sound, value: (file: file, track: _)) in soundEffects {
             // Get sound effects ready
@@ -178,24 +201,37 @@ class Options: SKScene, SKPhysicsContactDelegate {
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.outlineColor.position = self.colorBlue.position
+            // Ships above reflect the color chosen
+            self.design1.texture = SKTexture(imageNamed: "playerShip1_blue")
+            self.design2.texture = SKTexture(imageNamed: "playerShip2_blue")
+            self.design3.texture = SKTexture(imageNamed: "playerShip3_blue")
         }
         
         colorGreen.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.outlineColor.position = self.colorGreen.position
+            self.design1.texture = SKTexture(imageNamed: "playerShip1_green")
+            self.design2.texture = SKTexture(imageNamed: "playerShip2_green")
+            self.design3.texture = SKTexture(imageNamed: "playerShip3_green")
         }
         
         colorOrange.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.outlineColor.position = self.colorOrange.position
+            self.design1.texture = SKTexture(imageNamed: "playerShip1_orange")
+            self.design2.texture = SKTexture(imageNamed: "playerShip2_orange")
+            self.design3.texture = SKTexture(imageNamed: "playerShip3_orange")
         }
         
         colorRed.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.outlineColor.position = self.colorRed.position
+            self.design1.texture = SKTexture(imageNamed: "playerShip1_red")
+            self.design2.texture = SKTexture(imageNamed: "playerShip2_red")
+            self.design3.texture = SKTexture(imageNamed: "playerShip3_red")
         }
         
         exitCustomize.selectedHandler = { [unowned self] in
@@ -261,6 +297,79 @@ class Options: SKScene, SKPhysicsContactDelegate {
         skView.presentScene(scene, transition: fade)
     }
     
+    static func setPlayerDesign() -> SKTexture {
+        // Called every time the player loads
+        let shipDesign = UserDefaults().integer(forKey: "shipDesign")
+        // Database of possible ship designs
+        switch shipDesign {
+            case 1:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip1_blue")
+            case 2:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip1_green")
+            case 3:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip1_orange")
+            case 4:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip1_red")
+            case 5:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip2_blue")
+            case 6:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip2_green")
+            case 7:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip2_orange")
+            case 8:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip2_red")
+            case 9:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip3_blue")
+            case 10:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip3_orange")
+            case 11:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip3_red")
+            default:
+                Options.playerTexture = SKTexture(imageNamed: "playerShip3_green")
+        }
+        
+        return Options.playerTexture
+    }
+    
+    func playerDesign() {
+        // Adjusts look of spaceship based on selection in customization
+        switch outlineShip.position {
+            case design1.position:
+                switch outlineColor.position {
+                    case colorBlue.position:
+                        UserDefaults().set(1, forKey: "shipDesign")
+                    case colorGreen.position:
+                        UserDefaults().set(2, forKey: "shipDesign")
+                    case colorOrange.position:
+                        UserDefaults().set(3, forKey: "shipDesign")
+                    default:
+                        UserDefaults().set(4, forKey: "shipDesign")
+                }
+            case design2.position:
+                switch outlineColor.position {
+                    case colorBlue.position:
+                        UserDefaults().set(5, forKey: "shipDesign")
+                    case colorGreen.position:
+                        UserDefaults().set(6, forKey: "shipDesign")
+                    case colorOrange.position:
+                        UserDefaults().set(7, forKey: "shipDesign")
+                    default:
+                        UserDefaults().set(8, forKey: "shipDesign")
+                }
+            default:
+                switch outlineColor.position {
+                    case colorBlue.position:
+                        UserDefaults().set(9, forKey: "shipDesign")
+                    case colorOrange.position:
+                        UserDefaults().set(10, forKey: "shipDesign")
+                    case colorRed.position:
+                        UserDefaults().set(11, forKey: "shipDesign")
+                    default:
+                        UserDefaults().set(0, forKey: "shipDesign") // Default design
+                }
+        }
+    }
+    
     override func update(_ currentTime: TimeInterval) {
         if GameViewController.backgroundMusic.isPlaying {
             musicOff.isHidden = true
@@ -283,5 +392,8 @@ class Options: SKScene, SKPhysicsContactDelegate {
         }
         player.position.x += CGFloat(Double(motion.acceleration.x) * 15)
         thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45) // Fire moves alongside player
+        
+        playerDesign()
+        player.texture = Options.setPlayerDesign() // Update sprite within options
     }
 }

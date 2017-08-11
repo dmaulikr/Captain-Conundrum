@@ -10,7 +10,11 @@ import SpriteKit
 import AVFoundation
 
 class MainMenu: SKScene, SKPhysicsContactDelegate {
-    var player: MSButtonNode!
+    var player: MSButtonNode! {
+        didSet {
+            player.texture = Options.setPlayerDesign()
+        }
+    }
     var blast: SKSpriteNode!
     var title: SKSpriteNode!
     var buttonStart: MSButtonNode!

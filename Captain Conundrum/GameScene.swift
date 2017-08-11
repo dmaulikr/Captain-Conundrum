@@ -17,7 +17,11 @@ enum GameState {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     // Player and enemies
-    var player: SKSpriteNode!
+    var player: SKSpriteNode! {
+        didSet {
+            player.texture = Options.setPlayerDesign()
+        }
+    }
     var initialMeteor: SKSpriteNode!
     var meteor: SKSpriteNode!
     var satellite: SKSpriteNode!
