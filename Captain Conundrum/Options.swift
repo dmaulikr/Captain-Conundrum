@@ -29,9 +29,17 @@ class Options: SKScene, SKPhysicsContactDelegate {
     ]
     
     var screenControls: SKSpriteNode!
-    var buttonSlow: MSButtonNode!
+    static var motionConstant = UserDefaults().double(forKey: "motionConstant") {
+        didSet {
+            if motionConstant == 0 {
+                UserDefaults().set(15, forKey: "motionConstant") // Default value
+                motionConstant = UserDefaults().double(forKey: "motionConstant")
+            }
+        }
+    }
+    var buttonLow: MSButtonNode!
     var buttonMedium: MSButtonNode!
-    var buttonFast: MSButtonNode!
+    var buttonHigh: MSButtonNode!
     var player: SKSpriteNode!
     let thrusters = SKEmitterNode(fileNamed: "Fire")!
     var motionManager: CMMotionManager!
@@ -67,9 +75,9 @@ class Options: SKScene, SKPhysicsContactDelegate {
         comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
         
         screenControls = childNode(withName: "screenControls") as! SKSpriteNode
-        buttonSlow = screenControls.childNode(withName: "buttonSlow") as! MSButtonNode
+        buttonLow = screenControls.childNode(withName: "buttonLow") as! MSButtonNode
         buttonMedium = screenControls.childNode(withName: "buttonMedium") as! MSButtonNode
-        buttonFast = screenControls.childNode(withName: "buttonFast") as! MSButtonNode
+        buttonHigh = screenControls.childNode(withName: "buttonHigh") as! MSButtonNode
         player = screenControls.childNode(withName: "player") as! SKSpriteNode
         controlBoundary = screenControls.childNode(withName: "controlBoundary") as! SKSpriteNode
         currentControl = screenControls.childNode(withName: "currentControl") as! SKSpriteNode
@@ -89,6 +97,16 @@ class Options: SKScene, SKPhysicsContactDelegate {
         outlineShip = screenCustomize.childNode(withName: "outlineShip") as! SKSpriteNode
         outlineColor = screenCustomize.childNode(withName: "outlineColor") as! SKSpriteNode
         exitCustomize = screenCustomize.childNode(withName: "exitCustomize") as! MSButtonNode
+        
+        // Position of currentControl
+        switch UserDefaults().double(forKey: "motionConstant") {
+            case 10:
+                currentControl.position.y = 140
+            case 20:
+                currentControl.position.y = 10
+            default:
+                currentControl.position.y = 75
+        }
         
         // Position of outlineShip
         switch UserDefaults().integer(forKey: "shipDesign") {
@@ -135,22 +153,25 @@ class Options: SKScene, SKPhysicsContactDelegate {
             self.screenControls.position.x = 0
         }
         
-        buttonSlow.selectedHandler = { [unowned self] in
+        buttonLow.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.currentControl.position.y = 140
+            UserDefaults().set(10, forKey: "motionConstant")
         }
         
         buttonMedium.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.currentControl.position.y = 75
+            UserDefaults().set(15, forKey: "motionConstant")
         }
         
-        buttonFast.selectedHandler = { [unowned self] in
+        buttonHigh.selectedHandler = { [unowned self] in
             self.soundEffects["select"]?.track?.prepareToPlay()
             self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
             self.currentControl.position.y = 10
+            UserDefaults().set(20, forKey: "motionConstant")
         }
         
         exitControls.selectedHandler = { [unowned self] in
@@ -297,6 +318,11 @@ class Options: SKScene, SKPhysicsContactDelegate {
         skView.presentScene(scene, transition: fade)
     }
     
+    static func setMotionConstant() -> Double {
+        // Called every time motion controls are needed
+        return UserDefaults().double(forKey: "motionConstant")
+    }
+    
     static func setPlayerDesign() -> SKTexture {
         // Called every time the player loads
         let shipDesign = UserDefaults().integer(forKey: "shipDesign")
@@ -387,10 +413,13 @@ class Options: SKScene, SKPhysicsContactDelegate {
             messageTime = 0 // Reset timer for each cycle
         }
         
+        Options.motionConstant = UserDefaults().double(forKey: "motionConstant") // Update motion within options
+        
         guard let motion = motionManager.accelerometerData else {
             return // Accelerometer isn't ready until the next frame
         }
-        player.position.x += CGFloat(Double(motion.acceleration.x) * 15)
+        
+        player.position.x += CGFloat(Double(motion.acceleration.x) * Options.motionConstant)
         thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45) // Fire moves alongside player
         
         playerDesign()

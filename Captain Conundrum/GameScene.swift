@@ -637,10 +637,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // The rest of update is only when game is active
+        if Options.motionConstant == 0 {
+            UserDefaults().set(15, forKey: "motionConstant") // Default value
+            Options.motionConstant = UserDefaults().double(forKey: "motionConstant")
+        }
+        
         guard let motion = motionManager.accelerometerData else {
             return // Accelerometer isn't ready until the next frame
         }
-        player.position.x += CGFloat(Double(motion.acceleration.x) * 15)
+        
+        player.position.x += CGFloat(Double(motion.acceleration.x) * Options.motionConstant)
         thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45) // Fire moves alongside player
         
         scrollWorld()
