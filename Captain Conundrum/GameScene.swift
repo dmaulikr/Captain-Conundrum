@@ -30,7 +30,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         "satelliteX": -200, "satelliteY": -200,
         "rocket": -300,
         "ufo+": 150, "ufo-": -150,
-        "powerUp": -400
+        "powerUp": -200
     ]
     
     // Power ups
@@ -433,8 +433,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func spawnPowerUp() {
-        // Randomly spawns a power up from the top every minute
-        if powerSpawnTimer < 60 { return }
+        // Randomly spawns a power up from the top every 30 seconds
+        if powerSpawnTimer < 30 { return }
         
         let powerUp = arc4random_uniform(4) // 4 power ups to choose from
         let powerUpPosition = CGPoint(x: CGFloat.random(min: -117, max: 117), y: 305)
@@ -599,6 +599,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         powerupInvincible.position = CGPoint(x: -120, y: 210)
         powerupInvincible.physicsBody?.categoryBitMask = 0
         player.physicsBody?.contactTestBitMask = 0
+        player.alpha = 0.5 // Appear to be invisible
         powerTime += fixedDelta
         
         if abs(powerTime - round(powerTime)) <= 0.01 {
@@ -606,12 +607,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             timeLimit -= 1
         }
         
-        if abs(powerTime / 2 - round(powerTime / 2)) <= 0.01 && powerTime <= 8 { // Action needs to refresh every 2 seconds and not extend toward the end
-            player.run(SKAction(named: "Invincibility")!)
-        }
-        
         if powerTime >= 10 {
             player.physicsBody?.contactTestBitMask = 1016
+            player.alpha = 1
             powerTime = 0
             hasPower["invincible"] = false
             timeLabel.isHidden = true
@@ -866,7 +864,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else { nodeB.removeFromParent() }
         }
         
-        // Enemies are going offscreen
+        // Enemies and power ups are going offscreen
         if (nodeA.name == "meteor" || nodeA.name == "satellite" || nodeA.name == "rocket" || nodeA.name == "ufo" || nodeA.name == "powerupHealth" || nodeA.name == "powerupRapidFire" || nodeA.name == "powerupSpread" || nodeA.name == "powerupInvincible") && nodeB.name == "boundary" ||
             nodeA.name == "boundary" && (nodeB.name == "meteor" || nodeB.name == "satellite" || nodeB.name == "rocket" || nodeB.name == "ufo" || nodeB.name == "powerupHealth" || nodeB.name == "powerupRapidFire" || nodeB.name == "powerupSpread" || nodeB.name == "powerupInvincible") {
             if nodeA.name == "rocket" {
