@@ -42,8 +42,8 @@ class GameViewController: UIViewController {
             
             view.ignoresSiblingOrder = true
             
-            view.showsFPS = true
-            view.showsNodeCount = true
+            //view.showsFPS = true
+            //view.showsNodeCount = true
             
             // Play music in the background
             let soundFilePath = Bundle.main.path(forResource: "techological", ofType: "caf")!

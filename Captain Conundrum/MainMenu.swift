@@ -93,7 +93,7 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         }
         
         scene.scaleMode = .aspectFit
-        skView.showsFPS = true
+        //skView.showsFPS = true
         let fade = SKTransition.fade(withDuration: 1)
         
         skView.presentScene(scene, transition: fade)
@@ -111,7 +111,7 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         }
         
         scene.scaleMode = .aspectFit
-        skView.showsFPS = true
+        //skView.showsFPS = true
         let fade = SKTransition.fade(withDuration: 1)
         
         skView.presentScene(scene, transition: fade)
