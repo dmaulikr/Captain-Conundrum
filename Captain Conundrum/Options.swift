@@ -122,12 +122,24 @@ class Options: SKScene, SKPhysicsContactDelegate {
         switch UserDefaults().integer(forKey: "shipDesign") {
             case 1,5,9:
                 outlineColor.position = colorBlue.position
+                self.design1.texture = SKTexture(imageNamed: "playerShip1_blue")
+                self.design2.texture = SKTexture(imageNamed: "playerShip2_blue")
+                self.design3.texture = SKTexture(imageNamed: "playerShip3_blue")
             case 3,7,10:
                 outlineColor.position = colorOrange.position
+                self.design1.texture = SKTexture(imageNamed: "playerShip1_orange")
+                self.design2.texture = SKTexture(imageNamed: "playerShip2_orange")
+                self.design3.texture = SKTexture(imageNamed: "playerShip3_orange")
             case 4,8,11:
                 outlineColor.position = colorRed.position
+                self.design1.texture = SKTexture(imageNamed: "playerShip1_red")
+                self.design2.texture = SKTexture(imageNamed: "playerShip2_red")
+                self.design3.texture = SKTexture(imageNamed: "playerShip3_red")
             default:
                 outlineColor.position = colorGreen.position
+                self.design1.texture = SKTexture(imageNamed: "playerShip1_green")
+                self.design2.texture = SKTexture(imageNamed: "playerShip2_green")
+                self.design3.texture = SKTexture(imageNamed: "playerShip3_green")
         }
         
         for (key: sound, value: (file: file, track: _)) in soundEffects {

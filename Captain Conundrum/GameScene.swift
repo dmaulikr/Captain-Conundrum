@@ -762,7 +762,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Player is doing damage
         if nodeA.name == "attack" && nodeB.name == "initialMeteor" || nodeA.name == "initialMeteor" && nodeB.name == "attack" {
-            soundEffects["explosion"]?.track?.prepareToPlay()
             self.soundQueue.addOperation {
                 self.soundEffects["explosion"]?.track?.prepareToPlay()
                 self.soundEffects["explosion"]?.track?.play()
