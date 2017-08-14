@@ -272,7 +272,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if self.gameState == .gameOver { return }
             self.gameState = .paused
             self.boxPause.isHidden = false
-            self.isPaused = true
         }
         
         buttonContinue.selectedHandler = { [unowned self] in
@@ -645,7 +644,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        if gameState == .paused { return }
+        if gameState == .paused {
+            self.isPaused = true // When phone wakes up from sleep, scene continues to be paused
+            return
+        }
         
         // Only have pause box if paused
         self.boxPause.isHidden = true
