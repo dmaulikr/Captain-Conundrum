@@ -766,7 +766,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.soundQueue.addOperation {
                 self.soundEffects["explosion"]?.track?.prepareToPlay()
                 self.soundEffects["explosion"]?.track?.play()
-                self.soundEffects["explosion"]?.track?.volume = 0.5
             }
             
             if nodeA.name == "initialMeteor" {
@@ -795,7 +794,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.soundQueue.addOperation {
                 self.soundEffects["explosion"]?.track?.prepareToPlay()
                 self.soundEffects["explosion"]?.track?.play()
-                self.soundEffects["explosion"]?.track?.volume = 0.5
             }
             
             if nodeA.name == "meteor" {
@@ -817,7 +815,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.soundQueue.addOperation {
                 self.soundEffects["explosion"]?.track?.prepareToPlay()
                 self.soundEffects["explosion"]?.track?.play()
-                self.soundEffects["explosion"]?.track?.volume = 0.5
             }
             
             if nodeA.name == "satellite" {
@@ -839,7 +836,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.soundQueue.addOperation {
                 self.soundEffects["explosion"]?.track?.prepareToPlay()
                 self.soundEffects["explosion"]?.track?.play()
-                self.soundEffects["explosion"]?.track?.volume = 0.5
             }
             
             if nodeA.name == "rocket" {
@@ -865,7 +861,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.soundQueue.addOperation {
                 self.soundEffects["explosion"]?.track?.prepareToPlay()
                 self.soundEffects["explosion"]?.track?.play()
-                self.soundEffects["explosion"]?.track?.volume = 0.5
             }
             
             if nodeA.name == "ufo" {
@@ -975,7 +970,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.soundQueue.addOperation {
                 self.soundEffects["explosion"]?.track?.prepareToPlay()
                 self.soundEffects["explosion"]?.track?.play()
-                self.soundEffects["explosion"]?.track?.volume = 0.5
             }
             
             if nodeA.name == "rocket" {

@@ -151,7 +151,6 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
             self.soundQueue.addOperation {
                 self.soundEffects["explosion"]?.track?.prepareToPlay()
                 self.soundEffects["explosion"]?.track?.play()
-                self.soundEffects["explosion"]?.track?.volume = 0.5
             }
             if nodeA.name == "blast" {
                 blast = nodeA as! SKSpriteNode
