@@ -54,8 +54,10 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         soundQueue.qualityOfService = QualityOfService.background
         
         player.selectedHandler = { [unowned self] in // Prevents memory leaks from MSButtonNode
-            self.soundEffects["attack"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["attack"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["attack"]?.track?.prepareToPlay()
+                self.soundEffects["attack"]?.track?.play()
+            }
             self.blast.physicsBody?.velocity = CGVector(dx: 0, dy: 500) // Secret button!
             
             if self.blast.position.y >= 325 {
@@ -64,14 +66,18 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         }
         
         buttonStart.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.loadGame()
         }
         
         buttonOptions.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.loadOptions()
         }
         
@@ -93,7 +99,6 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         }
         
         scene.scaleMode = .aspectFit
-        //skView.showsFPS = true
         let fade = SKTransition.fade(withDuration: 1)
         
         skView.presentScene(scene, transition: fade)
@@ -111,7 +116,6 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         }
         
         scene.scaleMode = .aspectFit
-        //skView.showsFPS = true
         let fade = SKTransition.fade(withDuration: 1)
         
         skView.presentScene(scene, transition: fade)
@@ -144,9 +148,11 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         
         if nodeA.name == "blast" && nodeB.name == "title" || nodeA.name == "title" && nodeB.name == "blast" {
             // Title will spin out of control!
-            soundEffects["explosion"]?.track?.prepareToPlay()
-            soundQueue.addOperation { self.soundEffects["explosion"]?.track?.play() }
-            soundEffects["explosion"]?.track?.volume = 0.5
+            self.soundQueue.addOperation {
+                self.soundEffects["explosion"]?.track?.prepareToPlay()
+                self.soundEffects["explosion"]?.track?.play()
+                self.soundEffects["explosion"]?.track?.volume = 0.5
+            }
             if nodeA.name == "blast" {
                 blast = nodeA as! SKSpriteNode
                 blast.position.y = 0

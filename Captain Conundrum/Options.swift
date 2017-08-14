@@ -148,79 +148,103 @@ class Options: SKScene, SKPhysicsContactDelegate {
         
         // Controls
         buttonControls.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.screenControls.position.x = 0
         }
         
         buttonLow.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.currentControl.position.y = 140
             UserDefaults().set(10, forKey: "motionConstant")
         }
         
         buttonMedium.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.currentControl.position.y = 75
             UserDefaults().set(15, forKey: "motionConstant")
         }
         
         buttonHigh.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.currentControl.position.y = 10
             UserDefaults().set(20, forKey: "motionConstant")
         }
         
         exitControls.selectedHandler = { [unowned self] in
-            self.soundEffects["exit"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["exit"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["exit"]?.track?.prepareToPlay()
+                self.soundEffects["exit"]?.track?.play()
+            }
             self.screenControls.position.x = 350
         }
         
         // Credits
         buttonCredits.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.screenCredits.position.x = 0
         }
         
         exitCredits.selectedHandler = { [unowned self] in
-            self.soundEffects["exit"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["exit"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["exit"]?.track?.prepareToPlay()
+                self.soundEffects["exit"]?.track?.play()
+            }
             self.screenCredits.position.x = -350
         }
         
         // Customize
         buttonCustomize.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.screenCustomize.position.y = 0
         }
         
         design1.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.outlineShip.position = self.design1.position
         }
         
         design2.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.outlineShip.position = self.design2.position
         }
         
         design3.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.outlineShip.position = self.design3.position
         }
         
         colorBlue.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.outlineColor.position = self.colorBlue.position
             // Ships above reflect the color chosen
             self.design1.texture = SKTexture(imageNamed: "playerShip1_blue")
@@ -229,8 +253,10 @@ class Options: SKScene, SKPhysicsContactDelegate {
         }
         
         colorGreen.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.outlineColor.position = self.colorGreen.position
             self.design1.texture = SKTexture(imageNamed: "playerShip1_green")
             self.design2.texture = SKTexture(imageNamed: "playerShip2_green")
@@ -238,8 +264,10 @@ class Options: SKScene, SKPhysicsContactDelegate {
         }
         
         colorOrange.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.outlineColor.position = self.colorOrange.position
             self.design1.texture = SKTexture(imageNamed: "playerShip1_orange")
             self.design2.texture = SKTexture(imageNamed: "playerShip2_orange")
@@ -247,8 +275,10 @@ class Options: SKScene, SKPhysicsContactDelegate {
         }
         
         colorRed.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.outlineColor.position = self.colorRed.position
             self.design1.texture = SKTexture(imageNamed: "playerShip1_red")
             self.design2.texture = SKTexture(imageNamed: "playerShip2_red")
@@ -256,33 +286,43 @@ class Options: SKScene, SKPhysicsContactDelegate {
         }
         
         exitCustomize.selectedHandler = { [unowned self] in
-            self.soundEffects["exit"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["exit"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["exit"]?.track?.prepareToPlay()
+                self.soundEffects["exit"]?.track?.play()
+            }
             self.screenCustomize.position.y = -600
         }
         
         // Other
         leaderboards.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.comingSoon.isHidden = false
         }
         
         achievements.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             self.comingSoon.isHidden = false
         }
         
         buttonBack.selectedHandler = { [unowned self] in
-            self.soundEffects["exit"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["exit"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["exit"]?.track?.prepareToPlay()
+                self.soundEffects["exit"]?.track?.play()
+            }
             self.loadMainMenu()
         }
         
         musicOn.selectedHandler = { [unowned self] in
-            self.soundEffects["select"]?.track?.prepareToPlay()
-            self.soundQueue.addOperation { self.soundEffects["select"]?.track?.play() }
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
             GameViewController.backgroundMusic.stop()
             self.musicOff.isHidden = false
         }
@@ -312,7 +352,6 @@ class Options: SKScene, SKPhysicsContactDelegate {
         }
         
         scene.scaleMode = .aspectFit
-        //skView.showsFPS = true
         let fade = SKTransition.fade(withDuration: 1)
         
         skView.presentScene(scene, transition: fade)
