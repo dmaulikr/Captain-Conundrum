@@ -21,52 +21,57 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="black" translatesAutoresizingMaskIntoConstraints="NO" id="1g0-KN-yih">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="black" translatesAutoresizingMaskIntoConstraints="NO" id="1g0-KN-yih">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="playerShip3_blue" translatesAutoresizingMaskIntoConstraints="NO" id="DOz-0W-Iad">
-                                <rect key="frame" x="69" y="216" width="98" height="75"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="50" y="120" width="155" height="287"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="playerShip3_green" translatesAutoresizingMaskIntoConstraints="NO" id="BPq-yA-srn">
-                                <rect key="frame" x="207" y="216" width="98" height="75"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="170" y="120" width="155" height="287"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="playerShip3_orange" translatesAutoresizingMaskIntoConstraints="NO" id="7Fo-1P-iBK">
-                                <rect key="frame" x="69" y="376" width="98" height="75"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                            </imageView>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="playerShip3_red" translatesAutoresizingMaskIntoConstraints="NO" id="uYq-os-zNY">
-                                <rect key="frame" x="207" y="376" width="98" height="75"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="50" y="260" width="155" height="287"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="star_bronze" translatesAutoresizingMaskIntoConstraints="NO" id="dbR-Jp-yJM">
-                                <rect key="frame" x="103" y="141" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="55" y="25" width="85" height="217"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="star_silver" translatesAutoresizingMaskIntoConstraints="NO" id="KBx-fM-qFf">
-                                <rect key="frame" x="172" y="141" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="145" y="25" width="85" height="217"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="star_gold" translatesAutoresizingMaskIntoConstraints="NO" id="Mcz-kD-LRL">
-                                <rect key="frame" x="241" y="141" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="235" y="25" width="85" height="217"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="star_silver" translatesAutoresizingMaskIntoConstraints="NO" id="OfD-l7-hLH">
-                                <rect key="frame" x="172" y="511" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="145" y="425" width="85" height="217"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="star_gold" translatesAutoresizingMaskIntoConstraints="NO" id="94N-io-fZV">
-                                <rect key="frame" x="241" y="511" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="235" y="425" width="85" height="217"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="star_bronze" translatesAutoresizingMaskIntoConstraints="NO" id="vu7-mw-0yO">
-                                <rect key="frame" x="103" y="511" width="31" height="30"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <rect key="frame" x="55" y="425" width="85" height="217"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="playerShip3_red" translatesAutoresizingMaskIntoConstraints="NO" id="uYq-os-zNY">
+                                <rect key="frame" x="170" y="260" width="155" height="287"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="1g0-KN-yih" secondAttribute="trailing" id="Jjs-UY-5CC"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="1g0-KN-yih" secondAttribute="bottom" id="QAR-Ns-WRG"/>
+                            <constraint firstItem="1g0-KN-yih" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="S9o-2l-3Eu"/>
+                            <constraint firstItem="1g0-KN-yih" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="e1Q-uI-ueT"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
