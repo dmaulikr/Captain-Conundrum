@@ -19,6 +19,7 @@
 		251363EA1F3A5A4900963B60 /* Answers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 251363E81F3A5A4900963B60 /* Answers.framework */; };
 		2513E3421F39454C009EE04B /* laser5_trimmed.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2513E3411F39454C009EE04B /* laser5_trimmed.caf */; };
 		2513E3441F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2513E3431F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf */; };
+		251821F91F45E2FB0031AE9C /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 251821F81F45E2FB0031AE9C /* GameKit.framework */; };
 		25192DE81F262E4800722D8F /* digital-sfx-set in Resources */ = {isa = PBXBuildFile; fileRef = 25192DE71F262E4800722D8F /* digital-sfx-set */; };
 		25192DEA1F262E6B00722D8F /* ui-sfx-set in Resources */ = {isa = PBXBuildFile; fileRef = 25192DE91F262E6B00722D8F /* ui-sfx-set */; };
 		254CF4191F26262F008711BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254CF4181F26262F008711BC /* AppDelegate.swift */; };
@@ -50,6 +51,8 @@
 		251363E81F3A5A4900963B60 /* Answers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Answers.framework; sourceTree = "<group>"; };
 		2513E3411F39454C009EE04B /* laser5_trimmed.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = laser5_trimmed.caf; sourceTree = "<group>"; };
 		2513E3431F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = cc0_explosion_large_gun_powder_trimmed.caf; sourceTree = "<group>"; };
+		251821F81F45E2FB0031AE9C /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		251821FA1F45E34A0031AE9C /* Captain Conundrum.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Captain Conundrum.entitlements"; sourceTree = "<group>"; };
 		25192DE71F262E4800722D8F /* digital-sfx-set */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "digital-sfx-set"; sourceTree = "<group>"; };
 		25192DE91F262E6B00722D8F /* ui-sfx-set */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "ui-sfx-set"; sourceTree = "<group>"; };
 		254CF4151F26262F008711BC /* Captain Conundrum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Captain Conundrum.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				251821F91F45E2FB0031AE9C /* GameKit.framework in Frameworks */,
 				251363EA1F3A5A4900963B60 /* Answers.framework in Frameworks */,
 				251363E91F3A5A4900963B60 /* Fabric.framework in Frameworks */,
 			);
@@ -83,6 +87,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		251821F51F45E1D30031AE9C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				251821F81F45E2FB0031AE9C /* GameKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		25192DDA1F262D0800722D8F /* SFX */ = {
 			isa = PBXGroup;
 			children = (
@@ -108,6 +120,7 @@
 				254CF4171F26262F008711BC /* Captain Conundrum */,
 				254CF4161F26262F008711BC /* Products */,
 				25192DDA1F262D0800722D8F /* SFX */,
+				251821F51F45E1D30031AE9C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -122,6 +135,7 @@
 		254CF4171F26262F008711BC /* Captain Conundrum */ = {
 			isa = PBXGroup;
 			children = (
+				251821FA1F45E34A0031AE9C /* Captain Conundrum.entitlements */,
 				254CF4181F26262F008711BC /* AppDelegate.swift */,
 				25EFF55A1F265F550096F4FA /* MainMenu.sks */,
 				25EFF5601F26685C0096F4FA /* Options.sks */,
@@ -179,6 +193,14 @@
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = UF6E5BVT98;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.GameCenter = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 0;
+							};
+						};
 					};
 				};
 			};

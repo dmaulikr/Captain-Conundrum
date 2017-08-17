@@ -9,8 +9,9 @@
 import SpriteKit
 import CoreMotion
 import AVFoundation
+import GameKit // For Game Center
 
-class Options: SKScene, SKPhysicsContactDelegate {
+class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate {
     var buttonControls: MSButtonNode!
     var buttonCredits: MSButtonNode!
     var buttonCustomize: MSButtonNode!
@@ -311,7 +312,13 @@ class Options: SKScene, SKPhysicsContactDelegate {
                 self.soundEffects["select"]?.track?.prepareToPlay()
                 self.soundEffects["select"]?.track?.play()
             }
-            self.comingSoon.isHidden = false
+            // MARK: - OPEN GAME CENTER LEADERBOARD
+            // GameViewController().checkGCLeaderboard()
+            let gcVC = GKGameCenterViewController()
+            gcVC.gameCenterDelegate = self
+            gcVC.viewState = .leaderboards
+            // User will see all leaderboards (change gcVC.leaderboardIdentifier for specific one)
+            self.view?.window?.rootViewController?.present(gcVC, animated: true, completion: nil)
         }
         
         achievements.selectedHandler = { [unowned self] in
@@ -445,6 +452,10 @@ class Options: SKScene, SKPhysicsContactDelegate {
                         UserDefaults().set(0, forKey: "shipDesign") // Default design
                 }
         }
+    }
+    
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+        gameCenterViewController.dismiss(animated: true, completion: nil)
     }
     
     override func update(_ currentTime: TimeInterval) {

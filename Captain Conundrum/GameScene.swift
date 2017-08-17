@@ -743,10 +743,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             UserDefaults().set(score, forKey: "highscore") // New high score set
             highScoreLabel.text = "High Score: \(score)"
             addChild(newRecordLabel)
+            GameViewController.submitToGC(score: score, leaderboard: GameViewController.HIGH_LEADERBOARD_ID)
         } else if score < lowScore {
             UserDefaults().set(score, forKey: "lowscore") // New low score set
             lowScoreLabel.text = "Low Score: \(score)"
             addChild(newRecordLabel)
+            GameViewController.submitToGC(score: score, leaderboard: GameViewController.LOW_LEADERBOARD_ID)
         }
     }
     
