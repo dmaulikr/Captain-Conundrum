@@ -20,9 +20,7 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
     var buttonBack: MSButtonNode!
     var musicOn: MSButtonNode!
     var musicOff: MSButtonNode!
-    var messageTime: CFTimeInterval = 0
     let fixedDelta: CFTimeInterval = 1.0 / 60.0 // 60 FPS
-    var comingSoon: SKLabelNode! // Placeholder until features are implemented
     let soundQueue = OperationQueue()
     var soundEffects: [String: (file: String, track: AVAudioPlayer?)] = [
         "select": ("click1", nil),
@@ -49,6 +47,7 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
     var exitControls: MSButtonNode!
     
     var screenCredits: SKSpriteNode!
+    let achievementCredits = GKAchievement(identifier: "achievement.credits")
     var exitCredits: MSButtonNode!
     
     var screenCustomize: SKSpriteNode!
@@ -73,7 +72,6 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
         buttonBack = childNode(withName: "buttonBack") as! MSButtonNode
         musicOn = childNode(withName: "musicOn") as! MSButtonNode
         musicOff = childNode(withName: "musicOff") as! MSButtonNode
-        comingSoon = childNode(withName: "comingSoon") as! SKLabelNode
         
         screenControls = childNode(withName: "screenControls") as! SKSpriteNode
         buttonLow = screenControls.childNode(withName: "buttonLow") as! MSButtonNode
@@ -210,6 +208,13 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
                 self.soundEffects["select"]?.track?.play()
             }
             self.screenCredits.position.x = 0
+            
+            if !self.achievementCredits.isCompleted {
+                // Player hit credits
+                self.achievementCredits.percentComplete = 100.0
+                self.achievementCredits.showsCompletionBanner = true
+                GKAchievement.report([self.achievementCredits], withCompletionHandler: nil)
+            }
         }
         
         exitCredits.selectedHandler = { [unowned self] in
@@ -326,7 +331,11 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
                 self.soundEffects["select"]?.track?.prepareToPlay()
                 self.soundEffects["select"]?.track?.play()
             }
-            self.comingSoon.isHidden = false
+            // MARK: - OPEN GAME CENTER ACHIEVEMENTS
+            let gcVC = GKGameCenterViewController()
+            gcVC.gameCenterDelegate = self
+            gcVC.viewState = .achievements
+            self.view?.window?.rootViewController?.present(gcVC, animated: true, completion: nil)
         }
         
         buttonBack.selectedHandler = { [unowned self] in
@@ -463,16 +472,6 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
             musicOff.isHidden = true
         } else {
             musicOn.isHidden = true
-        }
-        
-        if comingSoon.isHidden == false {
-            messageTime += fixedDelta
-        }
-        
-        // After 1 second, the coming soon message disappears
-        if messageTime >= 1.0 {
-            comingSoon.isHidden = true // Returns to default state
-            messageTime = 0 // Reset timer for each cycle
         }
         
         Options.motionConstant = UserDefaults().double(forKey: "motionConstant") // Update motion within options

@@ -8,6 +8,7 @@
 
 import SpriteKit
 import AVFoundation
+import GameKit
 
 class MainMenu: SKScene, SKPhysicsContactDelegate {
     var player: MSButtonNode! {
@@ -28,6 +29,7 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
         "attack": ("laser5_trimmed", nil),
         "explosion": ("cc0_explosion_large_gun_powder_trimmed", nil)
     ]
+    let achievementTitle = GKAchievement(identifier: "achievement.easteregg")
     
     override func didMove(to view: SKView) {
         player = childNode(withName: "player") as! MSButtonNode
@@ -62,6 +64,13 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
             
             if self.blast.position.y >= 325 {
                 self.blast.position.y = 0 // Replace attack when offscreen
+            }
+            
+            if !self.achievementTitle.isCompleted {
+                // Player touched the ship
+                self.achievementTitle.percentComplete = 100.0
+                self.achievementTitle.showsCompletionBanner = true
+                GKAchievement.report([self.achievementTitle], withCompletionHandler: nil)
             }
         }
         

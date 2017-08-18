@@ -47,8 +47,8 @@
 		250EF1691F34E7CF0042D674 /* techological.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = techological.caf; sourceTree = "<group>"; };
 		250EF16B1F34EBB90042D674 /* laser7.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = laser7.caf; sourceTree = "<group>"; };
 		251363E41F3A2AED00963B60 /* powerUp12.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = powerUp12.caf; sourceTree = "<group>"; };
-		251363E71F3A5A4900963B60 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
-		251363E81F3A5A4900963B60 /* Answers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Answers.framework; sourceTree = "<group>"; };
+		251363E71F3A5A4900963B60 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Fabric.framework; path = "Captain Conundrum/Fabric.framework"; sourceTree = "<group>"; };
+		251363E81F3A5A4900963B60 /* Answers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Answers.framework; path = "Captain Conundrum/Answers.framework"; sourceTree = "<group>"; };
 		2513E3411F39454C009EE04B /* laser5_trimmed.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = laser5_trimmed.caf; sourceTree = "<group>"; };
 		2513E3431F39455C009EE04B /* cc0_explosion_large_gun_powder_trimmed.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = cc0_explosion_large_gun_powder_trimmed.caf; sourceTree = "<group>"; };
 		251821F81F45E2FB0031AE9C /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
@@ -90,6 +90,8 @@
 		251821F51F45E1D30031AE9C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				251363E71F3A5A4900963B60 /* Fabric.framework */,
+				251363E81F3A5A4900963B60 /* Answers.framework */,
 				251821F81F45E2FB0031AE9C /* GameKit.framework */,
 			);
 			name = Frameworks;
@@ -152,8 +154,6 @@
 				254CF4251F26262F008711BC /* Assets.xcassets */,
 				254CF4271F26262F008711BC /* LaunchScreen.storyboard */,
 				254CF42A1F26262F008711BC /* Info.plist */,
-				251363E71F3A5A4900963B60 /* Fabric.framework */,
-				251363E81F3A5A4900963B60 /* Answers.framework */,
 			);
 			path = "Captain Conundrum";
 			sourceTree = "<group>";

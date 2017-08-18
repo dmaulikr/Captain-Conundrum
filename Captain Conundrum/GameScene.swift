@@ -10,6 +10,7 @@ import SpriteKit
 import CoreMotion
 import Foundation
 import AVFoundation
+import GameKit
 
 enum GameState {
     case active, paused, gameOver
@@ -85,6 +86,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         "power up": ("powerUp12", nil)
     ]
     
+    // Achievements
+    let achievement1000 =      GKAchievement(identifier: "achievement.score.1000")
+    let achievement3000 =      GKAchievement(identifier: "achievement.score.3000")
+    let achievement_50 =       GKAchievement(identifier: "achievement.score._50")
+    let achievementNoPower =   GKAchievement(identifier: "achievement.nopower")
+    let achievementAccurate =  GKAchievement(identifier: "achievement.accuracy.100")
+    let achievementMeteor =    GKAchievement(identifier: "achievement.onlymeteor")
+    let achievementSatellite = GKAchievement(identifier: "achievement.onlysatellite")
+    let achievementRocket =    GKAchievement(identifier: "achievement.justrocket")
+    let achievementUFO =       GKAchievement(identifier: "achievement.onlyufo")
+    
     // Other
     var scoreLabel: SKLabelNode!
     var timeLabel: SKLabelNode!
@@ -92,6 +104,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var healthBar: SKSpriteNode!
     var motionManager: CMMotionManager!
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
+    var meteorsHit = 0
+    var satellitesHit = 0
+    var rocketsHit = 0
+    var ufosHit = 0
     var numberOfBlasts = 0
     var blastLimit = 3 // Only 3 lasers allowed on screen at once
     var timeBetweenBlasts = 0.5 // Auto-fire every 0.5 seconds
@@ -642,6 +658,69 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func checkGCAchievements() {
+        // Checks how far the player has fulfilled an achievement
+        if score >= 1000 && !achievement1000.isCompleted {
+            // Player scored at least 1000 points
+            achievement1000.percentComplete = 100.0
+            achievement1000.showsCompletionBanner = true // Achievement unlocked
+            GKAchievement.report([achievement1000], withCompletionHandler: nil)
+        }
+        
+        if score >= 3000 && !achievement3000.isCompleted {
+            // Player scored at least 3000 points
+            achievement3000.percentComplete = 100.0
+            achievement3000.showsCompletionBanner = true
+            GKAchievement.report([achievement3000], withCompletionHandler: nil)
+        }
+        
+        if score <= -50 && !achievement_50.isCompleted {
+            // Player scored at most -50 points
+            achievement_50.percentComplete = 100.0
+            achievement_50.showsCompletionBanner = true
+            GKAchievement.report([achievement_50], withCompletionHandler: nil)
+        }
+        
+        if !achievementNoPower.isCompleted {
+            // Player scored at least 3000 points w/o power ups
+        }
+        
+        if score >= 1000 && misses == 0 && !achievementAccurate.isCompleted {
+            // Player scored at least 1000 points w/o missing
+            achievementAccurate.percentComplete = 100.0
+            achievementAccurate.showsCompletionBanner = true
+            GKAchievement.report([achievementAccurate], withCompletionHandler: nil)
+        }
+        
+        if meteorsHit >= 10 && !achievementMeteor.isCompleted {
+            // Player hit 10 meteors in a row
+            achievementMeteor.percentComplete = 100.0
+            achievementMeteor.showsCompletionBanner = true
+            GKAchievement.report([achievementMeteor], withCompletionHandler: nil)
+        }
+        
+        if satellitesHit >= 10 && !achievementSatellite.isCompleted {
+            // Player hit 10 satellites in a row
+            achievementSatellite.percentComplete = 100.0
+            achievementSatellite.showsCompletionBanner = true
+            GKAchievement.report([achievementSatellite], withCompletionHandler: nil)
+        }
+        
+        if rocketsHit >= 10 && !achievementRocket.isCompleted {
+            // Player hit 10 rockets in a row
+            achievementRocket.percentComplete = 100.0
+            achievementRocket.showsCompletionBanner = true
+            GKAchievement.report([achievementRocket], withCompletionHandler: nil)
+        }
+        
+        if ufosHit >= 10 && !achievementUFO.isCompleted {
+            // Player hit 10 ufos in a row
+            achievementUFO.percentComplete = 100.0
+            achievementUFO.showsCompletionBanner = true
+            GKAchievement.report([achievementUFO], withCompletionHandler: nil)
+        }
+    }
+    
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         if gameState == .paused {
@@ -725,6 +804,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         rocketAI()
         ufoAI()
+        checkGCAchievements()
         
         if hasPower["health"]! { powerHealth() }
         else if hasPower["rapidFire"]! { powerRapidFire() }
@@ -807,6 +887,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 nodeA.removeFromParent()
             }
             
+            meteorsHit += 1
+            satellitesHit = 0
+            rocketsHit = 0
+            ufosHit = 0
             numberOfBlasts -= 1
             hits += 1
             score += 1
@@ -828,6 +912,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 nodeA.removeFromParent()
             }
             
+            meteorsHit = 0
+            satellitesHit += 1
+            rocketsHit = 0
+            ufosHit = 0
             numberOfBlasts -= 1
             hits += 1
             score += 5
@@ -853,6 +941,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 nodeA.removeFromParent()
             }
             
+            meteorsHit = 0
+            satellitesHit = 0
+            rocketsHit += 1
+            ufosHit = 0
             numberOfBlasts -= 1
             hits += 1
             score += 10
@@ -880,6 +972,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 nodeA.removeFromParent()
             }
             
+            meteorsHit = 0
+            satellitesHit = 0
+            rocketsHit = 0
+            ufosHit += 1
             numberOfBlasts -= 1
             hits += 1
             score += 20
