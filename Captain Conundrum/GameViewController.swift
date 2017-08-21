@@ -117,13 +117,7 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate {
         // Submit score to the appropriate GC leaderboard
         let bestScoreInt = GKScore(leaderboardIdentifier: leaderboard)
         bestScoreInt.value = Int64(score)
-        GKScore.report([bestScoreInt]) { (error) in
-            if error != nil {
-                print(error!.localizedDescription)
-            } else {
-                print("Best Score submitted to your Leaderboard!")
-            }
-        }
+        GKScore.report([bestScoreInt], withCompletionHandler: nil)
     }
     
     // Delegate to dismiss the GC controller

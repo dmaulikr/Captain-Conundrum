@@ -43,6 +43,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var powerupRapidFire: SKSpriteNode!
     var powerupSpread: SKSpriteNode!
     var powerupInvincible: SKSpriteNode!
+    var touchedPower = false
     var hasPower: [String: Bool] = [
         // Determines which power up(s) the player has
         "health": false,
@@ -681,8 +682,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             GKAchievement.report([achievement_50], withCompletionHandler: nil)
         }
         
-        if !achievementNoPower.isCompleted {
+        if score >= 3000 && !touchedPower && !achievementNoPower.isCompleted {
             // Player scored at least 3000 points w/o power ups
+            achievementNoPower.percentComplete = 100.0
+            achievementNoPower.showsCompletionBanner = true
+            GKAchievement.report([achievementNoPower], withCompletionHandler: nil)
         }
         
         if score >= 1000 && misses == 0 && !achievementAccurate.isCompleted {
@@ -1030,6 +1034,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.soundEffects["power up"]?.track?.prepareToPlay()
                 self.soundEffects["power up"]?.track?.play()
             }
+            touchedPower = true
             
             if nodeA.name == "powerupHealth" || nodeB.name == "powerupHealth" {
                 powerupMessage.text = "Health"
