@@ -104,6 +104,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var currentMessage: SKLabelNode!
     var healthBar: SKSpriteNode!
     var motionManager: CMMotionManager!
+    var joystick: JoystickNode!
+    let movementSpeed: CGFloat = 2
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
     var meteorsHit = 0
     var satellitesHit = 0
@@ -262,6 +264,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
         timeLabel = childNode(withName: "timeLabel") as! SKLabelNode
         healthBar = childNode(withName: "healthBar") as! SKSpriteNode
+        
+        joystick = JoystickNode(radius: 25, backgroundColor: UIColor(red: 75 / 255, green: 75 / 255, blue: 75 / 255, alpha: 0.6), mainColor: UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 0.9))
+        joystick.position = CGPoint(x: -75, y: -225)
+        addChild(joystick)
         
         for (key: sound, value: (file: file, track: _)) in soundEffects {
             // Get sound effects ready
@@ -747,11 +753,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             Options.motionConstant = UserDefaults().double(forKey: "motionConstant")
         }
         
-        guard let motion = motionManager.accelerometerData else {
-            return // Accelerometer isn't ready until the next frame
+        if Options.controlScheme == 0 {
+            joystick.isHidden = true
+            guard let motion = motionManager.accelerometerData else {
+                return // Accelerometer isn't ready until the next frame
+            }
+            player.position.x += CGFloat(Double(motion.acceleration.x) * Options.motionConstant)
+        } else {
+            joystick.isHidden = false
+            player.position.x += joystick.moveRight(speed: movementSpeed)
+            player.position.x -= joystick.moveLeft(speed: movementSpeed)
         }
         
-        player.position.x += CGFloat(Double(motion.acceleration.x) * Options.motionConstant)
         thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45) // Fire moves alongside player
         
         scrollWorld()

@@ -36,14 +36,20 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
             }
         }
     }
+    static var controlScheme = UserDefaults().integer(forKey: "control")
     var buttonLow: MSButtonNode!
     var buttonMedium: MSButtonNode!
     var buttonHigh: MSButtonNode!
+    var buttonJoystick: MSButtonNode!
+    var buttonMotion: MSButtonNode!
     var player: SKSpriteNode!
     let thrusters = SKEmitterNode(fileNamed: "Fire")!
     var motionManager: CMMotionManager!
+    var joystick: JoystickNode!
+    let movementSpeed: CGFloat = 2
     var controlBoundary: SKSpriteNode!
     var currentControl: SKSpriteNode!
+    var currentScheme: SKSpriteNode!
     var exitControls: MSButtonNode!
     
     var screenCredits: SKSpriteNode!
@@ -77,9 +83,15 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
         buttonLow = screenControls.childNode(withName: "buttonLow") as! MSButtonNode
         buttonMedium = screenControls.childNode(withName: "buttonMedium") as! MSButtonNode
         buttonHigh = screenControls.childNode(withName: "buttonHigh") as! MSButtonNode
+        buttonJoystick = screenControls.childNode(withName: "buttonJoystick") as! MSButtonNode
+        buttonMotion = screenControls.childNode(withName: "buttonMotion") as! MSButtonNode
         player = screenControls.childNode(withName: "player") as! SKSpriteNode
+        joystick = JoystickNode(radius: 25, backgroundColor: UIColor(red: 75 / 255, green: 75 / 255, blue: 75 / 255, alpha: 0.6), mainColor: UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 0.9))
+        joystick.position = CGPoint(x: -75, y: -225)
+        screenControls.addChild(joystick)
         controlBoundary = screenControls.childNode(withName: "controlBoundary") as! SKSpriteNode
         currentControl = screenControls.childNode(withName: "currentControl") as! SKSpriteNode
+        currentScheme = screenControls.childNode(withName: "currentScheme") as! SKSpriteNode
         exitControls = screenControls.childNode(withName: "exitControls") as! MSButtonNode
         
         screenCredits = childNode(withName: "screenCredits") as! SKSpriteNode
@@ -105,6 +117,15 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
                 currentControl.position.y = 10
             default:
                 currentControl.position.y = 75
+        }
+        
+        // Position of currentScheme
+        if UserDefaults().integer(forKey: "control") == 0 {
+            currentScheme.position.x = 70
+            joystick.isHidden = true
+        } else {
+            currentScheme.position.x = -70
+            joystick.isHidden = false
         }
         
         // Position of outlineShip
@@ -191,6 +212,26 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
             }
             self.currentControl.position.y = 10
             UserDefaults().set(20, forKey: "motionConstant")
+        }
+        
+        buttonJoystick.selectedHandler = { [unowned self] in
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
+            self.currentScheme.position.x = -70
+            self.joystick.isHidden = false
+            UserDefaults().set(1, forKey: "control")
+        }
+        
+        buttonMotion.selectedHandler = { [unowned self] in
+            self.soundQueue.addOperation {
+                self.soundEffects["select"]?.track?.prepareToPlay()
+                self.soundEffects["select"]?.track?.play()
+            }
+            self.currentScheme.position.x = 70
+            self.joystick.isHidden = true
+            UserDefaults().set(0, forKey: "control")
         }
         
         exitControls.selectedHandler = { [unowned self] in
@@ -385,11 +426,6 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
         skView.presentScene(scene, transition: fade)
     }
     
-    static func setMotionConstant() -> Double {
-        // Called every time motion controls are needed
-        return UserDefaults().double(forKey: "motionConstant")
-    }
-    
     static func setPlayerDesign() -> SKTexture {
         // Called every time the player loads
         let shipDesign = UserDefaults().integer(forKey: "shipDesign")
@@ -475,12 +511,18 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
         }
         
         Options.motionConstant = UserDefaults().double(forKey: "motionConstant") // Update motion within options
+        Options.controlScheme = UserDefaults().integer(forKey: "control") // Update controls within options
         
-        guard let motion = motionManager.accelerometerData else {
-            return // Accelerometer isn't ready until the next frame
+        if Options.controlScheme == 0 {
+            guard let motion = motionManager.accelerometerData else {
+                return // Accelerometer isn't ready until the next frame
+            }
+            player.position.x += CGFloat(Double(motion.acceleration.x) * Options.motionConstant)
+        } else {
+            player.position.x += joystick.moveRight(speed: movementSpeed)
+            player.position.x -= joystick.moveLeft(speed: movementSpeed)
         }
         
-        player.position.x += CGFloat(Double(motion.acceleration.x) * Options.motionConstant)
         thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45) // Fire moves alongside player
         
         playerDesign()
