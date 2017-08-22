@@ -41,9 +41,6 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate {
         
         // Call the GC authentication controller
         authenticateLocalPlayer()
-        // Make sure user defaults are loaded into leaderboards
-        GameViewController.submitToGC(score: UserDefaults().integer(forKey: "highscore"), leaderboard: GameViewController.HIGH_LEADERBOARD_ID)
-        GameViewController.submitToGC(score: UserDefaults().integer(forKey: "lowscore"), leaderboard: GameViewController.LOW_LEADERBOARD_ID)
         
         if let view = self.view as! SKView? {
             // Load the SKScene from 'MainMenu.sks'

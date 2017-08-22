@@ -523,7 +523,10 @@ class Options: SKScene, SKPhysicsContactDelegate, GKGameCenterControllerDelegate
             player.position.x -= joystick.moveLeft(speed: movementSpeed)
         }
         
-        thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45) // Fire moves alongside player
+        thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45) // Fire moves alongside player,
+        // But not beyond spaceship itself
+        if thrusters.position.x >= 111 { thrusters.position.x = 111 }
+        else if thrusters.position.x <= -111 { thrusters.position.x = -111 }
         
         playerDesign()
         player.texture = Options.setPlayerDesign() // Update sprite within options

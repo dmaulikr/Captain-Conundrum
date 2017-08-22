@@ -766,6 +766,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         thrusters.position = CGPoint(x: player.position.x, y: player.position.y - 45) // Fire moves alongside player
+        if thrusters.position.x >= 111 { thrusters.position.x = 111 }
+        else if thrusters.position.x <= -111 { thrusters.position.x = -111 }
         
         scrollWorld()
         spawnEnemy()
@@ -840,13 +842,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             UserDefaults().set(score, forKey: "highscore") // New high score set
             highScoreLabel.text = "High Score: \(score)"
             addChild(newRecordLabel)
-            GameViewController.submitToGC(score: score, leaderboard: GameViewController.HIGH_LEADERBOARD_ID)
         } else if score < lowScore {
             UserDefaults().set(score, forKey: "lowscore") // New low score set
             lowScoreLabel.text = "Low Score: \(score)"
             addChild(newRecordLabel)
-            GameViewController.submitToGC(score: score, leaderboard: GameViewController.LOW_LEADERBOARD_ID)
         }
+        // Make sure user defaults are loaded into leaderboards
+        GameViewController.submitToGC(score: UserDefaults().integer(forKey: "highscore"), leaderboard: GameViewController.HIGH_LEADERBOARD_ID)
+        GameViewController.submitToGC(score: UserDefaults().integer(forKey: "lowscore"), leaderboard: GameViewController.LOW_LEADERBOARD_ID)
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
