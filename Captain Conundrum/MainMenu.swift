@@ -142,7 +142,7 @@ class MainMenu: SKScene, SKPhysicsContactDelegate {
                 star.position = self.convert(newPosition, to: scrollLayer)
             }
             
-            if title.position.y <= -310 {
+            if title.position.y <= -330 {
                 title.removeFromParent()
             }
         }

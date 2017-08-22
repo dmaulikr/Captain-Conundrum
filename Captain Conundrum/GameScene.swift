@@ -73,6 +73,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var touchTime:       CFTimeInterval = 0 // Holding down touch
     var fadeTime:        CFTimeInterval = 0 // Invulnerable to damage
     var powerTime:       CFTimeInterval = 0 // Power up active
+    var otherTouch = DispatchTime.now()
     
     // Music
     let soundQueue = OperationQueue()
@@ -366,6 +367,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func shoot() {
         if numberOfBlasts >= blastLimit { return }
+        // Make sure two shots aren't firing within 2 milliseconds of each other
+        let firstTouch = otherTouch
+        otherTouch = DispatchTime.now()
+        if Double(otherTouch.uptimeNanoseconds - firstTouch.uptimeNanoseconds) <= 2000000 { return }
         // Copies allow for multiple attacks on screen
         let multiAttack = attack.copy() as! SKSpriteNode
         self.soundQueue.addOperation {
