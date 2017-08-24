@@ -29,7 +29,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var rocket: SKSpriteNode!
     var ufo: SKSpriteNode!
     let thrusters = SKEmitterNode(fileNamed: "Fire")!
-    var enemySpeed: [String: Double] = [
+    static var enemySpeed: [String: Double] = [
         // Info about each enemy
         "meteor": -100,
         "satelliteX": -200, "satelliteY": -200,
@@ -73,6 +73,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var touchTime:       CFTimeInterval = 0 // Holding down touch
     var fadeTime:        CFTimeInterval = 0 // Invulnerable to damage
     var powerTime:       CFTimeInterval = 0 // Power up active
+    var gameTimer:       CFTimeInterval = 0 // Level active
     var otherTouch = DispatchTime.now()
     
     // Music
@@ -100,7 +101,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let achievementUFO =       GKAchievement(identifier: "achievement.onlyufo")
     
     // Other
-    var scoreLabel: SKLabelNode!
+    static var scoreLabel: SKLabelNode!
     var timeLabel: SKLabelNode!
     var currentMessage: SKLabelNode!
     var healthBorder: SKSpriteNode!
@@ -109,15 +110,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var joystick: JoystickNode!
     let movementSpeed: CGFloat = 2
     var initialMeteorsHit = 0 // Keeps track of initial meteor herd
-    var meteorsHit = 0
-    var satellitesHit = 0
-    var rocketsHit = 0
-    var ufosHit = 0
+    static var meteorsHit = 0
+    static var satellitesHit = 0
+    static var rocketsHit = 0
+    static var ufosHit = 0
     var numberOfBlasts = 0
     var blastLimit = 3 // Only 3 lasers allowed on screen at once
     var timeBetweenBlasts = 0.5 // Auto-fire every 0.5 seconds
-    var hits: Double = 0
-    var misses: Double = 0
+    static var hits: Double = 0
+    static var misses: Double = 0
     var rocketArray: [SKSpriteNode] = []
     var ufoArray: [SKSpriteNode] = []
     var ufoData: [(action: Int, originalPosition: CGFloat, timer: CFTimeInterval)] = []
@@ -125,8 +126,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var isInvincible = false
     var gameStart = false
     var gameState: GameState = .active
+    static var level = 1
     
-    var score = 0 {
+    static var score = 0 {
         didSet {
             scoreLabel.text = String(score)
         }
@@ -243,7 +245,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         // Called immediately after scene is loaded into view
         player = childNode(withName: "player") as! SKSpriteNode
-        initialMeteor = childNode(withName: "initialMeteor") as! SKSpriteNode
+        if GameScene.level == 1 {
+            initialMeteor = childNode(withName: "initialMeteor") as! SKSpriteNode
+        }
         meteor = childNode(withName: "meteor") as! SKSpriteNode
         satellite = childNode(withName: "satellite") as! SKSpriteNode
         rocket = childNode(withName: "rocket") as! SKSpriteNode
@@ -263,7 +267,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         buttonQuit2 = boxGameOver.childNode(withName: "buttonQuit2") as! MSButtonNode
         
         scrollLayer = childNode(withName: "scrollLayer")
-        scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
+        GameScene.scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
         timeLabel = childNode(withName: "timeLabel") as! SKLabelNode
         healthBorder = childNode(withName: "healthBorder") as! SKSpriteNode
         healthBar = healthBorder.childNode(withName: "healthBar") as! SKSpriteNode
@@ -455,23 +459,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             case 0:
                 let newMeteor = meteor.copy() as! SKSpriteNode
                 newMeteor.position = enemyPosition
-                newMeteor.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["meteor"]!) // Fall down slowly
+                newMeteor.physicsBody?.velocity = CGVector(dx: 0, dy: GameScene.enemySpeed["meteor"]!) // Fall down slowly
                 addChild(newMeteor)
             case 1:
                 let newSatellite = satellite.copy() as! SKSpriteNode
                 newSatellite.position = enemyPosition
-                newSatellite.physicsBody?.velocity = CGVector(dx: enemySpeed["satelliteX"]!, dy: enemySpeed["satelliteY"]!) // Move diagonally
+                newSatellite.physicsBody?.velocity = CGVector(dx: GameScene.enemySpeed["satelliteX"]!, dy: GameScene.enemySpeed["satelliteY"]!) // Move diagonally
                 addChild(newSatellite)
             case 2:
                 let newRocket = rocket.copy() as! SKSpriteNode
                 newRocket.position = enemyPosition
-                newRocket.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["rocket"]!) // Fall quickly
+                newRocket.physicsBody?.velocity = CGVector(dx: 0, dy: GameScene.enemySpeed["rocket"]!) // Fall quickly
                 addChild(newRocket)
                 rocketArray.append(newRocket) // Rocket collection
             default:
                 let newUFO = ufo.copy() as! SKSpriteNode
                 newUFO.position = enemyPosition
-                newUFO.physicsBody?.velocity = CGVector(dx: enemySpeed["ufo+"]!, dy: enemySpeed["ufo-"]!) // Zigzag
+                newUFO.physicsBody?.velocity = CGVector(dx: GameScene.enemySpeed["ufo+"]!, dy: GameScene.enemySpeed["ufo-"]!) // Zigzag
                 addChild(newUFO)
                 ufoArray.append(newUFO) // UFO collection
                 ufoData.append((0, 0, 0))  // UFO behavior
@@ -495,22 +499,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             case 0:
                 let newHealth = powerupHealth.copy() as! SKSpriteNode
                 newHealth.position = powerUpPosition
-                newHealth.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["powerUp"]!) // Fall down very quickly
+                newHealth.physicsBody?.velocity = CGVector(dx: 0, dy: GameScene.enemySpeed["powerUp"]!) // Fall down very quickly
                 addChild(newHealth)
             case 1:
                 let newFire = powerupRapidFire.copy() as! SKSpriteNode
                 newFire.position = powerUpPosition
-                newFire.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["powerUp"]!)
+                newFire.physicsBody?.velocity = CGVector(dx: 0, dy: GameScene.enemySpeed["powerUp"]!)
                 addChild(newFire)
             case 2:
                 let newSpread = powerupSpread.copy() as! SKSpriteNode
                 newSpread.position = powerUpPosition
-                newSpread.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["powerUp"]!)
+                newSpread.physicsBody?.velocity = CGVector(dx: 0, dy: GameScene.enemySpeed["powerUp"]!)
                 addChild(newSpread)
             default:
                 let newInvincible = powerupInvincible.copy() as! SKSpriteNode
                 newInvincible.position = powerUpPosition
-                newInvincible.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["powerUp"]!)
+                newInvincible.physicsBody?.velocity = CGVector(dx: 0, dy: GameScene.enemySpeed["powerUp"]!)
                 addChild(newInvincible)
         }
         
@@ -557,7 +561,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if ufoData[index].action == 0 && ufo.position.x >= 125 || ufoData[index].action == 1 && ufo.position.x <= -125 {
                 // UFO won't collide with side boundaries
                 ufoData[index].originalPosition = ufo.position.y
-                ufo.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufo-"]!)
+                ufo.physicsBody?.velocity = CGVector(dx: 0, dy: GameScene.enemySpeed["ufo-"]!)
                 
                 if ufoData[index].action == 0 { ufoData[index].action += 1 }
                 else { ufoData[index].action -= 1 }
@@ -568,15 +572,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ufoData[index].originalPosition = 0
                 
                 if ufoData[index].action == 0 {
-                    ufo.physicsBody?.velocity = CGVector(dx: enemySpeed["ufo+"]!, dy: 0)
+                    ufo.physicsBody?.velocity = CGVector(dx: GameScene.enemySpeed["ufo+"]!, dy: 0)
                 } else {
-                    ufo.physicsBody?.velocity = CGVector(dx: enemySpeed["ufo-"]!, dy: 0)
+                    ufo.physicsBody?.velocity = CGVector(dx: GameScene.enemySpeed["ufo-"]!, dy: 0)
                 }
             }
             
             // Ensures UFO is avoidable when close to player
             if ufo.position.y <= -140 {
-                ufo.physicsBody?.velocity = CGVector(dx: 0, dy: enemySpeed["ufo-"]!)
+                ufo.physicsBody?.velocity = CGVector(dx: 0, dy: GameScene.enemySpeed["ufo-"]!)
                 ufoData[index].action = 2
             }
         }
@@ -674,63 +678,63 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func checkGCAchievements() {
         // Checks how far the player has fulfilled an achievement
-        if score >= 1000 && !achievement1000.isCompleted {
+        if GameScene.score >= 1000 && !achievement1000.isCompleted {
             // Player scored at least 1000 points
             achievement1000.percentComplete = 100.0
             achievement1000.showsCompletionBanner = true // Achievement unlocked
             GKAchievement.report([achievement1000], withCompletionHandler: nil)
         }
         
-        if score >= 3000 && !achievement3000.isCompleted {
+        if GameScene.score >= 3000 && !achievement3000.isCompleted {
             // Player scored at least 3000 points
             achievement3000.percentComplete = 100.0
             achievement3000.showsCompletionBanner = true
             GKAchievement.report([achievement3000], withCompletionHandler: nil)
         }
         
-        if score <= -50 && !achievement_50.isCompleted {
+        if GameScene.score <= -50 && !achievement_50.isCompleted {
             // Player scored at most -50 points
             achievement_50.percentComplete = 100.0
             achievement_50.showsCompletionBanner = true
             GKAchievement.report([achievement_50], withCompletionHandler: nil)
         }
         
-        if score >= 3000 && !touchedPower && !achievementNoPower.isCompleted {
+        if GameScene.score >= 3000 && !touchedPower && !achievementNoPower.isCompleted {
             // Player scored at least 3000 points w/o power ups
             achievementNoPower.percentComplete = 100.0
             achievementNoPower.showsCompletionBanner = true
             GKAchievement.report([achievementNoPower], withCompletionHandler: nil)
         }
         
-        if score >= 1000 && misses == 0 && !achievementAccurate.isCompleted {
+        if GameScene.score >= 1000 && GameScene.misses == 0 && !achievementAccurate.isCompleted {
             // Player scored at least 1000 points w/o missing
             achievementAccurate.percentComplete = 100.0
             achievementAccurate.showsCompletionBanner = true
             GKAchievement.report([achievementAccurate], withCompletionHandler: nil)
         }
         
-        if meteorsHit >= 10 && !achievementMeteor.isCompleted {
+        if GameScene.meteorsHit >= 10 && !achievementMeteor.isCompleted {
             // Player hit 10 meteors in a row
             achievementMeteor.percentComplete = 100.0
             achievementMeteor.showsCompletionBanner = true
             GKAchievement.report([achievementMeteor], withCompletionHandler: nil)
         }
         
-        if satellitesHit >= 10 && !achievementSatellite.isCompleted {
+        if GameScene.satellitesHit >= 10 && !achievementSatellite.isCompleted {
             // Player hit 10 satellites in a row
             achievementSatellite.percentComplete = 100.0
             achievementSatellite.showsCompletionBanner = true
             GKAchievement.report([achievementSatellite], withCompletionHandler: nil)
         }
         
-        if rocketsHit >= 10 && !achievementRocket.isCompleted {
+        if GameScene.rocketsHit >= 10 && !achievementRocket.isCompleted {
             // Player hit 10 rockets in a row
             achievementRocket.percentComplete = 100.0
             achievementRocket.showsCompletionBanner = true
             GKAchievement.report([achievementRocket], withCompletionHandler: nil)
         }
         
-        if ufosHit >= 10 && !achievementUFO.isCompleted {
+        if GameScene.ufosHit >= 10 && !achievementUFO.isCompleted {
             // Player hit 10 ufos in a row
             achievementUFO.percentComplete = 100.0
             achievementUFO.showsCompletionBanner = true
@@ -794,16 +798,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        if gameStart {
+        if gameStart || GameScene.level > 1 {
             enemySpawnTimer += fixedDelta
             powerSpawnTimer += fixedDelta
+            gameTimer += fixedDelta
+            GameScene.scoreLabel.isHidden = false
+            // Scene changes every 2 minutes and level increases
+            if gameTimer >= 120 {
+                self.soundQueue.addOperation {
+                    self.soundEffects["power up"]?.track?.prepareToPlay()
+                    self.soundEffects["power up"]?.track?.play()
+                }
+                
+                guard let skView = self.view as SKView! else {
+                    print("Cound not get SKview")
+                    return
+                }
+                
+                guard var scene = skView.scene else {
+                    print("Could not get scene")
+                    return
+                }
+                
+                switch GameScene.level % 4 {
+                    case 1:
+                        scene = GameScene(fileNamed: "WaterScene")!
+                    case 2:
+                        scene = GameScene(fileNamed: "StreetScene")!
+                    case 3:
+                        scene = GameScene(fileNamed: "SkyScene")!
+                    default:
+                        scene = GameScene(fileNamed: "SpaceScene")!
+                }
+                
+                scene.scaleMode = .aspectFit
+                let fade = SKTransition.fade(withDuration: 1)
+                GameScene.level += 1
+                skView.presentScene(scene, transition: fade)
+            }
             
-            for (enemy, speed) in enemySpeed {
+            for (enemy, speed) in GameScene.enemySpeed {
                 // Overtime, enemies speed up to increase difficulty
                 if speed > 0 {
-                    enemySpeed[enemy] = speed + 0.01
+                    GameScene.enemySpeed[enemy] = speed + 0.01
                 } else {
-                    enemySpeed[enemy] = speed - 0.01
+                    GameScene.enemySpeed[enemy] = speed - 0.01
                 }
             }
         }
@@ -840,18 +879,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func playerScoreUpdate() {
         // Called once player loses
-        if score >= 0 { addChild(highScoreLabel) }
+        if GameScene.score >= 0 { addChild(highScoreLabel) }
         else { addChild(lowScoreLabel) }
         let highScore = UserDefaults().integer(forKey: "highscore")
         let lowScore = UserDefaults().integer(forKey: "lowscore")
         
-        if score > highScore {
-            UserDefaults().set(score, forKey: "highscore") // New high score set
-            highScoreLabel.text = "High Score: \(score)"
+        if GameScene.score > highScore {
+            UserDefaults().set(GameScene.score, forKey: "highscore") // New high score set
+            highScoreLabel.text = "High Score: \(GameScene.score)"
             addChild(newRecordLabel)
-        } else if score < lowScore {
-            UserDefaults().set(score, forKey: "lowscore") // New low score set
-            lowScoreLabel.text = "Low Score: \(score)"
+        } else if GameScene.score < lowScore {
+            UserDefaults().set(GameScene.score, forKey: "lowscore") // New low score set
+            lowScoreLabel.text = "Low Score: \(GameScene.score)"
             addChild(newRecordLabel)
         }
         // Make sure user defaults are loaded into leaderboards
@@ -888,11 +927,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             numberOfBlasts -= 1
             initialMeteorsHit += 1
-            hits += 1
+            GameScene.hits += 1
             if initialMeteorsHit == 3 {
                 addChild(startMessage) // Player has completed tutorial section
                 currentMessage = startMessage
-                scoreLabel.isHidden = false
                 messageTime += fixedDelta
                 gameStart = true
             }
@@ -914,13 +952,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 nodeA.removeFromParent()
             }
             
-            meteorsHit += 1
-            satellitesHit = 0
-            rocketsHit = 0
-            ufosHit = 0
+            GameScene.meteorsHit += 1
+            GameScene.satellitesHit = 0
+            GameScene.rocketsHit = 0
+            GameScene.ufosHit = 0
             numberOfBlasts -= 1
-            hits += 1
-            score += 1
+            GameScene.hits += 1
+            GameScene.score += 1
         }
         
         if nodeA.name == "attack" && nodeB.name == "satellite" || nodeA.name == "satellite" && nodeB.name == "attack" {
@@ -939,13 +977,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 nodeA.removeFromParent()
             }
             
-            meteorsHit = 0
-            satellitesHit += 1
-            rocketsHit = 0
-            ufosHit = 0
+            GameScene.meteorsHit = 0
+            GameScene.satellitesHit += 1
+            GameScene.rocketsHit = 0
+            GameScene.ufosHit = 0
             numberOfBlasts -= 1
-            hits += 1
-            score += 5
+            GameScene.hits += 1
+            GameScene.score += 5
         }
         
         if nodeA.name == "attack" && nodeB.name == "rocket" || nodeA.name == "rocket" && nodeB.name == "attack" {
@@ -968,13 +1006,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 nodeA.removeFromParent()
             }
             
-            meteorsHit = 0
-            satellitesHit = 0
-            rocketsHit += 1
-            ufosHit = 0
+            GameScene.meteorsHit = 0
+            GameScene.satellitesHit = 0
+            GameScene.rocketsHit += 1
+            GameScene.ufosHit = 0
             numberOfBlasts -= 1
-            hits += 1
-            score += 10
+            GameScene.hits += 1
+            GameScene.score += 10
         }
         
         if nodeA.name == "attack" && nodeB.name == "ufo" || nodeA.name == "ufo" && nodeB.name == "attack" {
@@ -999,18 +1037,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 nodeA.removeFromParent()
             }
             
-            meteorsHit = 0
-            satellitesHit = 0
-            rocketsHit = 0
-            ufosHit += 1
+            GameScene.meteorsHit = 0
+            GameScene.satellitesHit = 0
+            GameScene.rocketsHit = 0
+            GameScene.ufosHit += 1
             numberOfBlasts -= 1
-            hits += 1
-            score += 20
+            GameScene.hits += 1
+            GameScene.score += 20
         }
         
         // Satellite hits the side
         if nodeA.name == "satellite" && nodeB.name == "boundarySide" || nodeA.name == "boundarySide" && nodeB.name == "satellite" {
-            enemySpeed["satelliteX"] = -enemySpeed["satelliteX"]!
+            GameScene.enemySpeed["satelliteX"] = -GameScene.enemySpeed["satelliteX"]!
         }
         
         // Blasts are going offscreen
@@ -1018,7 +1056,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if nodeA.name == "attack" { nodeA.removeFromParent() }
             else { nodeB.removeFromParent() }
             numberOfBlasts -= 1
-            misses += 1
+            GameScene.misses += 1
         }
         
         if nodeA.name == "ufoAttack" && nodeB.name == "boundary" || nodeA.name == "boundary" && nodeB.name == "ufoAttack" {
@@ -1047,7 +1085,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if nodeA.name == "boundary" { nodeB.removeFromParent() }
             else { nodeA.removeFromParent() }
-            score -= 1 // Player is punished for not shooting enemies
+            GameScene.score -= 1 // Player is punished for not shooting enemies
         }
         
         // Player has powered up
@@ -1146,11 +1184,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 playerScoreUpdate()
                 
                 addChild(hitsMessage)
-                hitsMessage.text = "Hits: " + String(format: "%.0f", hits)
+                hitsMessage.text = "Hits: " + String(format: "%.0f", GameScene.hits)
                 addChild(missMessage)
-                missMessage.text = "Misses: " + String(format: "%.0f", misses)
+                missMessage.text = "Misses: " + String(format: "%.0f", GameScene.misses)
                 addChild(ratioMessage) // Round to 2 decimal places
-                ratioMessage.text = "Hit-Miss Ratio: " + String(format: "%.2f", hits/(hits + misses))
+                ratioMessage.text = "Hit-Miss Ratio: " + String(format: "%.2f", GameScene.hits/(GameScene.hits + GameScene.misses))
             }
         }
     }
