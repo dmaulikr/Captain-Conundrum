@@ -345,8 +345,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 return
             }
             
-            guard let scene = GameScene(fileNamed: "GameScene") else {
-                print("Could not load GameScene, check the name is spelled correctly")
+            guard let scene = GameScene(fileNamed: "SpaceScene") else {
+                print("Could not load SpaceScene, check the name is spelled correctly")
                 return
             }
             
