@@ -103,6 +103,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var scoreLabel: SKLabelNode!
     var timeLabel: SKLabelNode!
     var currentMessage: SKLabelNode!
+    var healthBorder: SKSpriteNode!
     var healthBar: SKSpriteNode!
     var motionManager: CMMotionManager!
     var joystick: JoystickNode!
@@ -264,7 +265,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scrollLayer = childNode(withName: "scrollLayer")
         scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
         timeLabel = childNode(withName: "timeLabel") as! SKLabelNode
-        healthBar = childNode(withName: "healthBar") as! SKSpriteNode
+        healthBorder = childNode(withName: "healthBorder") as! SKSpriteNode
+        healthBar = healthBorder.childNode(withName: "healthBar") as! SKSpriteNode
         
         joystick = JoystickNode(radius: 25, backgroundColor: UIColor(red: 75 / 255, green: 75 / 255, blue: 75 / 255, alpha: 0.6), mainColor: UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 0.9))
         joystick.position = CGPoint(x: -75, y: -225)
@@ -582,14 +584,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func powerHealth() {
         // Player restores health (the only power without a timer)
-        if healthBar.xScale >= 1.54 {
-            healthBar.xScale = 2.2 // Health bar won't extend beyond border
+        if healthBar.xScale >= 1.26 {
+            healthBar.xScale = 1.8 // Health bar won't extend beyond border
         } else {
-            healthBar.xScale += 0.66
+            healthBar.xScale += 0.54
         }
         
         // Turn the health bar back to green if health is more than half full
-        if healthBar.xScale > 1.1 {
+        if healthBar.xScale > 0.9 {
             healthBar.texture = SKTexture(imageNamed: "green_button04")
         }
         
@@ -1123,14 +1125,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             isInvincible = true
-            healthBar.xScale -= 0.22
+            healthBar.xScale -= 0.18
             
             // When the player is low on health, the health bar turns red
-            if healthBar.xScale <= 1.1 {
+            if healthBar.xScale <= 1 {
                 healthBar.texture = SKTexture(imageNamed: "red_button11")
             }
             
-            if healthBar.xScale <= 0 {
+            if healthBar.xScale <= 0.1 {
                 if nodeA.name == "player" {
                     contactA.categoryBitMask = 0
                     nodeA.run(SKAction.sequence([SKAction(named: "DestroyShip")!, SKAction.removeFromParent()]))
