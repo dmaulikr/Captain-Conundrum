@@ -105,7 +105,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var timeLabel: SKLabelNode!
     var currentMessage: SKLabelNode!
     var healthBorder: SKSpriteNode!
-    var healthBar: SKSpriteNode!
+    static var healthBar: SKSpriteNode!
     var motionManager: CMMotionManager!
     var joystick: JoystickNode!
     let movementSpeed: CGFloat = 2
@@ -131,6 +131,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     static var score = 0 {
         didSet {
             scoreLabel.text = String(score)
+        }
+    }
+    
+    static var health = healthBar.xScale {
+        didSet {
+            healthBar.xScale = health
         }
     }
     
@@ -270,11 +276,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         GameScene.scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
         timeLabel = childNode(withName: "timeLabel") as! SKLabelNode
         healthBorder = childNode(withName: "healthBorder") as! SKSpriteNode
-        healthBar = healthBorder.childNode(withName: "healthBar") as! SKSpriteNode
+        GameScene.healthBar = healthBorder.childNode(withName: "healthBar") as! SKSpriteNode
         
         joystick = JoystickNode(radius: 25, backgroundColor: UIColor(red: 75 / 255, green: 75 / 255, blue: 75 / 255, alpha: 0.6), mainColor: UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 0.9))
         joystick.position = CGPoint(x: -75, y: -225)
         addChild(joystick)
+        
+        // Set static variables to their correct values
+        if GameScene.level > 1 {
+            GameScene.score = GameScene.score
+            GameScene.health = GameScene.health
+            GameScene.meteorsHit = GameScene.meteorsHit
+            GameScene.satellitesHit = GameScene.satellitesHit
+            GameScene.rocketsHit = GameScene.rocketsHit
+            GameScene.ufosHit = GameScene.ufosHit
+            GameScene.hits = GameScene.hits
+            GameScene.misses = GameScene.misses
+            GameScene.level = GameScene.level
+        } else {
+            GameScene.score = 0
+            GameScene.health = GameScene.healthBar.xScale
+            GameScene.meteorsHit = 0
+            GameScene.satellitesHit = 0
+            GameScene.rocketsHit = 0
+            GameScene.ufosHit = 0
+            GameScene.hits = 0
+            GameScene.misses = 0
+        }
         
         for (key: sound, value: (file: file, track: _)) in soundEffects {
             // Get sound effects ready
@@ -334,6 +362,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             scene.scaleMode = .aspectFit
             let fade = SKTransition.fade(withDuration: 1)
             self.isPaused = false
+            GameScene.level = 1
             
             skView.presentScene(scene, transition: fade)
         }
@@ -358,6 +387,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             scene.scaleMode = .aspectFit
             let fade = SKTransition.fade(withDuration: 1)
+            GameScene.level = 1
             
             skView.presentScene(scene, transition: fade)
         }
@@ -588,15 +618,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func powerHealth() {
         // Player restores health (the only power without a timer)
-        if healthBar.xScale >= 1.26 {
-            healthBar.xScale = 1.8 // Health bar won't extend beyond border
+        if GameScene.health >= 1.26 {
+            GameScene.health = 1.8 // Health bar won't extend beyond border
         } else {
-            healthBar.xScale += 0.54
+            GameScene.health += 0.54
         }
         
         // Turn the health bar back to green if health is more than half full
-        if healthBar.xScale > 0.9 {
-            healthBar.texture = SKTexture(imageNamed: "green_button04")
+        if GameScene.health > 0.9 {
+            GameScene.healthBar.texture = SKTexture(imageNamed: "green_button04")
         }
         
         hasPower["health"] = false
@@ -804,7 +834,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             gameTimer += fixedDelta
             GameScene.scoreLabel.isHidden = false
             // Scene changes every 2 minutes and level increases
-            if gameTimer >= 120 {
+            if gameTimer >= 60 {
                 self.soundQueue.addOperation {
                     self.soundEffects["power up"]?.track?.prepareToPlay()
                     self.soundEffects["power up"]?.track?.play()
@@ -1163,14 +1193,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             isInvincible = true
-            healthBar.xScale -= 0.18
+            GameScene.health -= 0.18
             
             // When the player is low on health, the health bar turns red
-            if healthBar.xScale <= 1 {
-                healthBar.texture = SKTexture(imageNamed: "red_button11")
+            if GameScene.health <= 1 {
+                GameScene.healthBar.texture = SKTexture(imageNamed: "red_button11")
             }
             
-            if healthBar.xScale <= 0.1 {
+            if GameScene.health <= 0.1 {
                 if nodeA.name == "player" {
                     contactA.categoryBitMask = 0
                     nodeA.run(SKAction.sequence([SKAction(named: "DestroyShip")!, SKAction.removeFromParent()]))
@@ -1189,6 +1219,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 missMessage.text = "Misses: " + String(format: "%.0f", GameScene.misses)
                 addChild(ratioMessage) // Round to 2 decimal places
                 ratioMessage.text = "Hit-Miss Ratio: " + String(format: "%.2f", GameScene.hits/(GameScene.hits + GameScene.misses))
+                GameScene.level = 1
             }
         }
     }
