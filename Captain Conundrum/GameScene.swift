@@ -137,6 +137,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     static var health = healthBar.xScale {
         didSet {
             healthBar.xScale = health
+            if health <= 1 { healthBar.texture = SKTexture(imageNamed: "red_button11") }
         }
     }
     
@@ -302,6 +303,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             GameScene.ufosHit = 0
             GameScene.hits = 0
             GameScene.misses = 0
+            
+            GameScene.enemySpeed = [
+            "meteor": -100,
+            "satelliteX": -200, "satelliteY": -200,
+            "rocket": -300,
+            "ufo+": 150, "ufo-": -150,
+            "powerUp": -200
+            ]
         }
         
         for (key: sound, value: (file: file, track: _)) in soundEffects {
